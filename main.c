@@ -74,7 +74,49 @@ Soin soins[]={
     {"Engrais-Ionique", 7, 15, 2, {8,12}}
 };
     
-    
+void show(char *a){
+    int i;
+    //printf("%s",a);
+    if(strcmp(a,"vegetables")==0)
+    {
+        printf("Nom\t Type\t Force\t Resistance\t PVmax \t CE\n\n");
+        for(i=0;i<sizeof(Leaders)/sizeof(Champion);i++){
+             if(Leaders[i].Type==0){
+                printf("%s\t%5s\t%5d\t%10d\t%5d\t%3d\n",Leaders[i].nom,"Légume",Leaders[i].Force,Leaders[i].Resistance,Leaders[i].PVMax,Leaders[i].CE);
+        }}
+    }else if(strcmp(a,"fruits")==0)
+    {
+        printf("Nom\t\tType\t Force\t Resistance\t PVmax \t CE\n\n");
+         for(i=0;i<sizeof(Leaders)/sizeof(Champion);i++){
+             if(Leaders[i].Type==1){
+                printf("%-10s\t%3s\t%5d\t%10d\t%5d\t%3d\n",Leaders[i].nom,"Fruits",Leaders[i].Force,Leaders[i].Resistance,Leaders[i].PVMax,Leaders[i].CE);
+        }}
+    }else if(strcmp(a,"weapons")==0)
+    {
+        printf("Nom\t\t\tCE \t CA \t Dégats \tProbabilité\n\n");
+        for(i=0;i<sizeof(armes)/sizeof(Arme);i++){
+        printf("%-20s\t%d\t%d\t%3d-%-5d \t %9d\n",armes[i].nom,armes[i].CE,armes[i].CA,armes[i].Degats[0],armes[i].Degats[1],armes[i].Portee);
+        
+    }
+    }else if(strcmp(a,"protections")==0)
+    {
+        printf("Nom\t\t\tCE \t CA \tProbabilité\n\n");
+        for(i=0;i<sizeof(protections)/sizeof(Protection);i++){
+        printf("%-20s\t%d\t%d\t%10d\n",protections[i].nom,protections[i].CE,protections[i].CA,protections[i].Probabilite);
+    }
+
+    }else if(strcmp(a,"cares")==0)
+    {
+        printf("Nom\t\t\tCE \t CA \t Volumes \t Effets\n\n");
+        for(i=0;i<sizeof(soins)/sizeof(Soin);i++){
+        printf("%-20s\t%d\t%2d\t%5d\t%10d-%d\t\n",soins[i].nom,soins[i].CE,soins[i].CA,soins[i].Volumes,soins[i].Effet[0],soins[i].Effet[1]);
+    }
+
+    }else
+    {
+        printf("Error, type help for syntax");
+    }
+}
     
 void commandes(char *command,int *exit){
     int i;
@@ -93,10 +135,15 @@ void commandes(char *command,int *exit){
         
          
     }
-    for(i=0;i<j;i++)
-        printf("%s\n",argv[i]);
-
-    if(strcmp(argv[0],"help")==0){
+    
+    if(strcmp(argv[0],"show")==0){
+        if(*argv[1]!=0){
+            show(argv[1]);
+        }else{
+            printf("Error, type help for syntax");
+        }
+    }
+    else if(strcmp(argv[0],"help")==0){
         printf("show [vegetables|fruits|weapons|protections|cares] affiche la liste selectionner");
     }
     else if(strcmp(argv[0],"exit")==0){
@@ -115,9 +162,7 @@ int main()
     printf("Credit player 1 : %d  \nCredit player 2 : %d\n",*CA1,*CA2);
     /*
     int i;
-    for(i=0;i<sizeof(Leaders)/sizeof(Champion);i++){
-        printf("%s : %d , %d , %d , %d , %d\n",Leaders[i].nom,Leaders[i].Type,Leaders[i].Force,Leaders[i].Resistance,Leaders[i].PVMax,Leaders[i].CE);
-    }
+    
     for(i=0;i<sizeof(armes)/sizeof(Arme);i++){
         printf("%s : %d , %d , ( %d-%d ), %d\n",armes[i].nom,armes[i].CE,armes[i].CA,armes[i].Degats[0],armes[i].Degats[1],armes[i].Portee);
     }
