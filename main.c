@@ -4,30 +4,49 @@
 #include "initialisation.h"
 
     
-void show(char *a){
-    int i;
-    //printf("%s",a);
-    if(strcmp(a,"vegetables")==0)
+void show(char *a,char* ind){
+    int i=atoi(ind);
+    if(strcmp(a,"vegetables")==0 || strcmp(a,"vegetable")==0)
     {
-        printf("Nom\t Type\t Force\t Resistance\t PVmax \t CE\n\n");
+        if(i && Leaders[i].Type==1){
+            printf("ID\t Nom\t \tType\t Force\t Resistance\t PVmax \t CE\n");
+            printf("%d\t%-10s\t%3s\t%5d\t%10d\t%5d\t%3d\n",i,Leaders[i].nom,"Legumes",Leaders[i].Force,Leaders[i].Resistance,Leaders[i].PVMax,Leaders[i].CE);          
+        }else{
+        printf("ID\t Nom\n");
+        for(i=0;i<sizeof(Leaders)/sizeof(Champion);i++){
+             if(Leaders[i].Type==1){
+                 printf("%d\t%s\n",i,Leaders[i].nom);
+               
+        }
+    }
+    }
+    }else if(strcmp(a,"fruits")==0 || strcmp(a,"fruit")==0){
+        if(i && Leaders[i].Type==0){
+            printf("ID\tNom\t\tType\t Force\t Resistance\t PVmax \t CE\n\n");
+            printf("%d\t%-10s\t%3s\t%5d\t%10d\t%5d\t%3d\n",i,Leaders[i].nom,"Fruits",Leaders[i].Force,Leaders[i].Resistance,Leaders[i].PVMax,Leaders[i].CE);
+ 
+        }else{
+        printf("ID\t Nom\n");
         for(i=0;i<sizeof(Leaders)/sizeof(Champion);i++){
              if(Leaders[i].Type==0){
-                printf("%s\t%5s\t%5d\t%10d\t%5d\t%3d\n",Leaders[i].nom,"Légume",Leaders[i].Force,Leaders[i].Resistance,Leaders[i].PVMax,Leaders[i].CE);
-        }}
-    }else if(strcmp(a,"fruits")==0)
+                printf("%d\t%-10s\n",i,Leaders[i].nom);
+        }}}
+    }else if(strcmp(a,"weapons")==0 || strcmp(a,"weapon")==0)
     {
-        printf("Nom\t\tType\t Force\t Resistance\t PVmax \t CE\n\n");
-         for(i=0;i<sizeof(Leaders)/sizeof(Champion);i++){
-             if(Leaders[i].Type==1){
-                printf("%-10s\t%3s\t%5d\t%10d\t%5d\t%3d\n",Leaders[i].nom,"Fruits",Leaders[i].Force,Leaders[i].Resistance,Leaders[i].PVMax,Leaders[i].CE);
-        }}
-    }else if(strcmp(a,"weapons")==0)
-    {
+        if(i){
         printf("Nom\t\t\tCE \t CA \t Dégats \tProbabilité\n\n");
-        for(i=0;i<sizeof(armes)/sizeof(Arme);i++){
         printf("%-20s\t%d\t%d\t%3d-%-5d \t %9d\n",armes[i].nom,armes[i].CE,armes[i].CA,armes[i].Degats[0],armes[i].Degats[1],armes[i].Portee);
+
+        }else{
+            printf("ID\t Nom\n");
+            for(i=0;i<sizeof(armes)/sizeof(Arme);i++){
+            printf("%d\t%-20s\n",i,armes[i].nom);
+            
+            }
+        }
         
-    }
+                
+    
     }else if(strcmp(a,"protections")==0)
     {
         printf("Nom\t\t\tCE \t CA \tProbabilité\n\n");
@@ -52,9 +71,8 @@ void commandes(char *command,int *exit){
     int i;
     int j=0;
     int h=0;
-    char argv[5][50] = {{0},{0}};
+    char argv[10][50] = {{0},{0}};
     for(i=0;i<50;i++){
-        //printf("%c",command[i]);
         if(command[i]==' ' || command[i]=='\n'){
             j++;
             h=0;
@@ -62,13 +80,12 @@ void commandes(char *command,int *exit){
         }
         argv[j][h]=command[i];
         h++;
-        
-         
-    }
+}
     
+    //printf("%d",argv[2]);
     if(strcmp(argv[0],"show")==0){
         if(*argv[1]!=0){
-            show(argv[1]);
+            show(argv[1],argv[2]);
         }else{
             printf("Error, type help for syntax");
         }
