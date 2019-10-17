@@ -6,7 +6,7 @@ typedef struct {
     int Resistance;
     int PVMax;
     int CE;
-}Champion;
+}Leader;
 
 typedef struct
 {
@@ -15,7 +15,7 @@ typedef struct
     int CA;
     int Degats[2];
     int Portee;
-}Arme;
+}Weapon;
 
 typedef struct 
 {
@@ -33,9 +33,9 @@ typedef struct
     int CA;
     int Volumes;
     int Effet[2];
-}Soin;
+}Care;
 
-Champion Leaders[]={
+Leader Leaders[]={
     {"Haricot",1,10,10,40,5},
     {"Fenouil",1, 12, 15, 40, 7},
     {"Poireau",1 ,15, 20 ,60, 10},
@@ -50,7 +50,7 @@ Champion Leaders[]={
     {"Durian", 0,25 ,25 ,80 ,25}
 };
 
-Arme armes[]={
+Weapon Weapons[]={
     {"Eplucheur Laser", 2 , 1 ,{1,2},2 },
     {"Mandoline Sonique", 5, 3,{1,3}, 3},
     {"Couperet Laser", 10, 5, {2,6}, 5},
@@ -58,14 +58,14 @@ Arme armes[]={
     {"Mixeur Blaster", 30, 10,{7,12}, 11}
 };
 
-Protection protections[]={
+Protection Protections[]={
     {"Casque-Egouttoir", 1, 2, 25},
     {"Casque-Entonnoir", 3, 4, 40},
     {"Woklier", 5, 6, 60},
     {"Tablier-Armure", 10, 8, 80}
 };
     
-Soin soins[]={
+Care Cares[]={
     {"Humus-Neutronique", 1, 5, 4, {2,4}},
     {"Compost-Protonique", 5, 10, 3, {5,8}},
     {"Engrais-Ionique", 7, 15, 2, {8,12}}
