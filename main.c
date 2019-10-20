@@ -4,8 +4,10 @@
 #include "initialisation.h"
 
 
+
+
 int isNumber(char c){
-    return c>='0' && c<='9';
+    return c>=30 && c<=39;
 }
 int isLetter(char c){
     return (c>='a' && c<='z')||(c>='A' && c<='Z');
@@ -15,7 +17,9 @@ int check_argument_numeric(char* arg){
     int i=0;
     int taille=(int)sizeof(arg)/sizeof(char);
     while(i<=taille-1){
-        if(isLetter(arg[i])){
+        printf("%c\n",arg[i]);
+        if(!isNumber(arg[i])){
+            printf("yep\n");
             return 0;
         }
         i++;
@@ -25,7 +29,7 @@ int check_argument_alphabetic(char* arg){
     int i=0;
     int taille=(int)sizeof(arg)/sizeof(char);
     while(i<=taille-1){
-        if (isNumber(arg[i])){
+        if (!isLetter(arg[i])){
             return 0;
         }
         i++;
@@ -34,15 +38,9 @@ int check_argument_alphabetic(char* arg){
 
 void show(char *a,char* ind){
     int i;
-    if(check_argument_numeric(ind)){
-        printf("is numeric");
-        i=atoi(ind);
-    }else{
-        i=-1;
-    }
-    printf("%d,%d\n",isLetter('a'),isNumber('a'));
+    printf("%d,%s \n",check_argument_numeric(ind),ind);
     int j;
-    if(strcmp(a,"vegetables")==0 && !i){
+    if(strcmp(a,"vegetables")==0 && i==-1){
         printf("ID\t Nom\n");
             for(j=0;j<sizeof(Leaders)/sizeof(Leader);j++){
                 if(Leaders[j].Type==1){
@@ -52,15 +50,16 @@ void show(char *a,char* ind){
             printf("ID\t Nom\t \tType\t Force\t Resistance\t PVmax \t CE\n");
             printf("%d\t%-10s\t%3s\t%5d\t%10d\t%5d\t%3d\n",i,Leaders[i].nom,"Legumes",Leaders[i].Force,Leaders[i].Resistance,Leaders[i].PVMax,Leaders[i].CE);          
         
-    }else if(strcmp(a,"fruit")==0 && i>=0 && i<sizeof(Leaders)/sizeof(Leader) && Leaders[i].Type==0){
-            printf("ID\tNom\t\tType\t Force\t Resistance\t PVmax \t CE\n\n");
-            printf("%d\t%-10s\t%3s\t%5d\t%10d\t%5d\t%3d\n",i,Leaders[i].nom,"Fruits",Leaders[i].Force,Leaders[i].Resistance,Leaders[i].PVMax,Leaders[i].CE);
     }else if(strcmp(a,"fruits")==0 && i==-1){
             printf("ID\t Nom\n");
             for(j=0;j<sizeof(Leaders)/sizeof(Leader);j++){
                 if(Leaders[j].Type==0){
                     printf("%d\t%-10s\n",j,Leaders[j].nom);
             }   }
+    }
+    else if(strcmp(a,"fruit")==0 && i>=0 && i<sizeof(Leaders)/sizeof(Leader) && Leaders[i].Type==0){
+            printf("ID\tNom\t\tType\t Force\t Resistance\t PVmax \t CE\n\n");
+            printf("%d\t%-10s\t%3s\t%5d\t%10d\t%5d\t%3d\n",i,Leaders[i].nom,"Fruits",Leaders[i].Force,Leaders[i].Resistance,Leaders[i].PVMax,Leaders[i].CE);
     }else if(strcmp(a,"weapon")==0 && i>=0 && i<sizeof(Weapons)/sizeof(Weapon)){
             printf("ID\tNom\t\t\tCE \t CA \t Dégats \tProbabilité\n\n");
             printf("%d\t%-20s\t%d\t%d\t%3d-%-5d \t %9d\n",i,Weapons[i].nom,Weapons[i].CE,Weapons[i].CA,Weapons[i].Degats[0],Weapons[i].Degats[1],Weapons[i].Portee);
