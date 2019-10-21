@@ -35,12 +35,23 @@ typedef struct
     int Effet[2];
 }Care;
 
+
+typedef struct{
+    Leader Pleader;
+    Weapon Pweapon;
+    Protection Protection;
+    Care Pcare;
+    int CE;
+    int CA;
+}Player;
+
+
 Leader Leaders[]={
     {"Haricot",1,10,10,40,5},
     {"Fenouil",1, 12, 15, 40, 7},
     {"Poireau",1 ,15, 20 ,60, 10},
     {"Aubergine", 1 ,20 ,20 ,60 ,15},
-    {"Courgette" ,1 ,20 ,25 ,80 ,20},
+    {"Courge" ,1 ,20 ,25 ,80 ,20},
     {"Carotte",1, 25, 25, 80, 25},
     {"Banane",0,10 ,10 ,40 ,5},
     {"Kiwi",0,12, 15, 40, 7},

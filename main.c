@@ -17,6 +17,9 @@ int isNumber(char* arg){
         return num;
 }
 
+
+
+
 void show(char *a,char* ind){
     //printf("%d\n",ind);
     int i=isNumber(ind);
@@ -82,13 +85,47 @@ int isLeaders(char* a,int type){
     return 0;
 }
 
+int initProtection(Player *p){
+    int var=-2;
+    int j=0;
+    printf("Choisir votre Protection");
+    printf("ID\t Nom\t CE\n");
+    for(j=0;j<sizeof(Protections)/sizeof(Protection);j++){
+        printf("%d\t%-20s\n",j,Protections[j].nom,Protections[j].CE);
+    } 
+
+    do{
+            scanf("ID : %i",var);
+    }while(var<-1 || var >sizeof(Protections)/sizeof(Protection));
+    
+}
+
+
+void initPlayer(Player *p){
+    int end=0;
+    int i=0;
+    while(!end){
+        while(!i){
+            initProtection(p);
+            i=1;
+        }
+        end=1;
+    }
+}
+
+void fight(char *p1,char* p2){
+    Player *player1;
+    Player *player2;
+    initPlayer(player1);
+    initPlayer(player2);
+}
+
 void commandes(char *command,int *exit){
     int i;
     int j=0;
     int h=0;
-    char **argv = (char**)calloc(10,sizeof(char*));
+    char argv[5][50]={{0},{0}};
     for(i=0;i<strlen(command);i++){
-        argv[i] = (char*)calloc(20,sizeof(char*));
         if(command[i]==' ' || command[i]=='\n'){
             j++;
             h=0;
@@ -98,7 +135,8 @@ void commandes(char *command,int *exit){
             argv[j][h]=command[i];
             h++;
         }
-}
+    }
+    //printf("%s,%s,%s,%s\",argv[0],argv[1],argv[2],argv[3]);
     if(strcmp(argv[0],"show")==0){
         if(*argv[1]!=0){
             show(argv[1],argv[2]);
@@ -114,11 +152,20 @@ void commandes(char *command,int *exit){
         *exit=0;        
     }
     
-    else if(strcmp(argv[0],"fight") && strcmp(argv[2],"versus")==0 && ( (isLeaders(argv[1],0) && isLeaders(argv[3],1) || (isLeaders(argv[1],1) && isLeaders(argv[3],0)) ))){
-        printf("Combat d'infirme !!!");
+    else if(strcmp(argv[0],"fight")==0 && strcmp(argv[2],"versus")==0){
+        int condition1=isLeaders(argv[1],0) && isLeaders(argv[3],1);
+        int condition2=isLeaders(argv[1],1) && isLeaders(argv[3],0);
+        if(condition1 || condition2){
+            printf("Fight!");
+            fight(argv[1],argv[3]);
+            
+        };
     }
     
+    
 }
+
+
 
 
 int main()
@@ -127,13 +174,15 @@ int main()
     int *CA2=(int*)malloc(sizeof(int));
     *CA1=1000;
     *CA2=1000;
+
     printf("Credit player 1 : %d  \nCredit player 2 : %d\n",*CA1,*CA2);   
     int *exit=(int *)malloc(sizeof(int));
     *exit=1;
     while(*exit==1){
-        char * command=(char *)calloc(20,sizeof(char));
         printf("\n>");
-        fgets(command, sizeof(char)*50, stdin);
+        
+        char *command;
+        scanf ("%m[^\n]%*c", &command);
         commandes(command,exit);
         free(command);
     }
