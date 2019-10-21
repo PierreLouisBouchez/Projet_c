@@ -1,44 +1,26 @@
+#include "initialisation.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "initialisation.h"
+#include <ctype.h>
 
 
 
 
-int isNumber(char c){
-    return c>=30 && c<=39;
-}
-int isLetter(char c){
-    return (c>='a' && c<='z')||(c>='A' && c<='Z');
-}
 
-int check_argument_numeric(char* arg){
-    int i=0;
-    int taille=(int)sizeof(arg)/sizeof(char);
-    while(i<=taille-1){
-        printf("%c\n",arg[i]);
-        if(!isNumber(arg[i])){
-            printf("yep\n");
-            return 0;
-        }
-        i++;
-    }return 1;
-}
-int check_argument_alphabetic(char* arg){
-    int i=0;
-    int taille=(int)sizeof(arg)/sizeof(char);
-    while(i<=taille-1){
-        if (!isLetter(arg[i])){
-            return 0;
-        }
-        i++;
-    }return 1;
+int isNumber(char* arg){
+    int num;
+    num = atoi(arg);
+    if (num == 0 && arg[0] != '0')
+        return -1;
+    else
+        return num;
 }
 
 void show(char *a,char* ind){
-    int i;
-    printf("%d,%s \n",check_argument_numeric(ind),ind);
+    //printf("%d\n",ind);
+    int i=isNumber(ind);
+    //printf("%d",i);
     int j;
     if(strcmp(a,"vegetables")==0 && i==-1){
         printf("ID\t Nom\n");
@@ -89,25 +71,34 @@ void show(char *a,char* ind){
     }
 }
 
+int isLeaders(char* a,int type){
+    int j;
+    int taille = sizeof(Leaders)/sizeof(Leader);
+    for (j = 0; j < taille; j++){
+        if(strcmp(Leaders[j].nom,a)==0 && Leaders[j].Type==type){
+            return 1;
+        }
+    } 
+    return 0;
+}
 
 void commandes(char *command,int *exit){
     int i;
     int j=0;
     int h=0;
-    char argv[10][50] = {{0},{0}};
-    for(i=0;i<50;i++){
+    char **argv = (char**)calloc(10,sizeof(char*));
+    for(i=0;i<strlen(command);i++){
+        argv[i] = (char*)calloc(20,sizeof(char*));
         if(command[i]==' ' || command[i]=='\n'){
             j++;
             h=0;
             do{i++;}while(command[i]==' ');
         }
-        if(isNumber(command[i]) || isLetter(command[i])){
+        if(isalpha(command[i]) || isdigit(command[i])){
             argv[j][h]=command[i];
             h++;
         }
 }
-    
-    //printf("%d",argv[2]);
     if(strcmp(argv[0],"show")==0){
         if(*argv[1]!=0){
             show(argv[1],argv[2]);
@@ -123,6 +114,10 @@ void commandes(char *command,int *exit){
         *exit=0;        
     }
     
+    else if(strcmp(argv[0],"fight") && strcmp(argv[2],"versus")==0 && ( (isLeaders(argv[1],0) && isLeaders(argv[3],1) || (isLeaders(argv[1],1) && isLeaders(argv[3],0)) ))){
+        printf("Combat d'infirme !!!");
+    }
+    
 }
 
 
@@ -136,11 +131,10 @@ int main()
     int *exit=(int *)malloc(sizeof(int));
     *exit=1;
     while(*exit==1){
-        char * command=(char *)calloc(10,sizeof(char));
+        char * command=(char *)calloc(20,sizeof(char));
         printf("\n>");
         fgets(command, sizeof(char)*50, stdin);
         commandes(command,exit);
-        
         free(command);
     }
     
