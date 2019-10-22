@@ -118,7 +118,7 @@ int initProtection(Player *p){
         if(strcmp(var,"-1")==0){
             ind=-1;
         }else{
-        ind=isNumber(var);
+        ind=isNumber(var);//verif
         }
         printf("%d\n",ind);
     };
