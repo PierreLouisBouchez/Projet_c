@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-
+#define clear() printf("\e[1;1H\e[2J\n")
+#define txt(c) #c
 
 
 
@@ -86,35 +86,37 @@ int isLeaders(char* a,int type){
 }
 
 
-
-
-
 void newleader(Player* player,char* p){
     int j;
     int taille = sizeof(Leaders)/sizeof(Leader);
-    Leader lead;
+    Leader *lead=malloc(sizeof(Leader));
     for (j = 0; j < taille; j++){
         if(strcmp(Leaders[j].nom,p)==0){
-            lead=Leaders[j];
+            *lead=Leaders[j];
         }
     } 
-    player->Pleader=lead;
+    player->Pleader=*lead;
 
+}
+
+void initHeader(){
+    printf("ID\t Nom\t\tCE\n");
+    printf("-1\tAucun choix\n");
 }
 
 void initProtection(Player *p){
     int ind=-2;
     int j=0;
     char *var=malloc(20*sizeof(char));
-    printf("\tChoisir votre Protection\n");
-    printf("ID\t Nom\t CE\n");
+    printf("\tChoisissez votre Protection\n\n");
+    initHeader();
     for(j=0;j<sizeof(Protections)/sizeof(Protection);j++){
         printf("%d\t%-20s\t%d\n",j,Protections[j].nom,Protections[j].CE);
     } 
     printf("\n");
     int choix=0;
     while(choix==0){
-        printf("%s > ",p->Pleader.nom);
+        printf("%s-> ",p->Pleader.nom);
         scanf("%s",var);
         ind=isNumber(var);//verif
         if(ind==-1){
@@ -122,11 +124,14 @@ void initProtection(Player *p){
         }else if(ind>=0 && ind <= sizeof(Protections)/sizeof(Protection)){
             choix=2;
         }
-        printf("%d\n",ind);
     };
     if(choix==2){
         p->Protection=Protections[ind];
         p->CE-=Protections[ind].CE;
+    }else{
+        Protection c;
+        c.nom="Aucune";
+        p->Protection=c;
     }
 
     free(var);
@@ -136,46 +141,80 @@ void initWeapon(Player *p){
     int ind=-2;
     int j=0;
     char *var=malloc(20*sizeof(char));
-    printf("\tChoisir votre Arme\n");
-    printf("ID\t Nom\t CE\n");
+    printf("\tChoisissez votre Arme\n\n");
+    printf("ID\t Nom\t\tCE\n");
     for(j=0;j<sizeof(Weapons)/sizeof(Weapon);j++){
         printf("%d\t%-20s\t%d\n",j,Weapons[j].nom,Weapons[j].CE);
+    }
+    printf("\n");
+    int choix=0;
+    while(choix==0){
+        printf("%s-> ",p->Pleader.nom);
+        scanf("%s",var);
+        ind=isNumber(var);//verif
+        if(ind>=0 && ind <= sizeof(Weapons)/sizeof(Weapon)){
+            choix=1;
+        }
+}
+    p->Pweapon=Weapons[ind];
+    p->CE-=Weapons[ind].CE;
+    
+
+    free(var);
+}
+
+void initCare(Player *p){
+    int ind=-2;
+    int j=0;
+    char *var=malloc(20*sizeof(char));
+    printf("\tChoisissez votre Soin\n\n");
+    initHeader();
+    for(j=0;j<sizeof(Cares)/sizeof(Care);j++){
+        printf("%d\t%-20s\t%d\n",j,Cares[j].nom,Cares[j].CE);
     } 
     printf("\n");
     int choix=0;
     while(choix==0){
-        printf("%s > ",p->Pleader.nom);
+        printf("%s-> ",p->Pleader.nom);
         scanf("%s",var);
         ind=isNumber(var);//verif
         if(ind==-1){
             choix=1;
-        }else if(ind>=0 && ind <= sizeof(Weapons)/sizeof(Weapon)){
+        }else if(ind>=0 && ind <= sizeof(Cares)/sizeof(Care)){
             choix=2;
         }
-        printf("%d\n",ind);
     };
     if(choix==2){
-        p->Pweapon=Weapons[ind];
-        p->CE-=Weapons[ind].CE;
+        p->Pcare=Cares[ind];
+        p->CE-=Cares[ind].CE;
+    }else{
+        Care c;
+        c.nom="Aucune";
+        p->Pcare=c;
     }
 
     free(var);
 }
 
+
 void initPlayer(Player *p){
     p->CE=1000;
     int end=0;
     int i=0;
-    while(end==0){
-        while(i==0){
-            initProtection(p);
-            printf("CE:%d\nProtection:%s\n",p->CE,p->Protection.nom);
-            initWeapon(p);
-            printf("CE:%d\nArme:%s\n",p->CE,p->Pweapon.nom);
-            i=1;
-        }
-        end++;
-    }
+    clear();
+    printf("\t\t%s\n\n",p->Pleader.nom);
+    initProtection(p);
+    clear();
+    initCare(p);
+    clear();
+    initWeapon(p);
+    clear();
+    getchar();
+}
+
+void printPlayer(Player *p){
+    printf("\t%s\n\n",p->Pleader.nom);
+    printf("CE : %d\nArme : %s\nProtection : %s\nSoin : %s\n\n",p->CE,p->Pweapon.nom,p->Protection.nom,p->Pcare.nom);
 }
 
 void fight(char *p1,char* p2){
@@ -185,7 +224,9 @@ void fight(char *p1,char* p2){
     newleader(player2,p2);
     initPlayer(player1);
     initPlayer(player2);
-    printf("Initilisation terminée!");
+    printPlayer(player1);
+    printPlayer(player2);
+    
 }
 
 
@@ -195,6 +236,8 @@ void commandes(char *command,int *exit){
     int j=0;
     int h=0;
     char argv[5][50]={{0},{0}};
+    clear();
+    
     for(i=0;i<strlen(command);i++){
         if(command[i]==' ' || command[i]=='\n'){
             j++;
@@ -212,25 +255,28 @@ void commandes(char *command,int *exit){
             show(argv[1],argv[2]);
         }
         else{
-            printf("Error, type help for syntax");
+            printf("Erreur, type help for syntax\n");
         }
     }
     else if(strcmp(argv[0],"help")==0){
+        
         printf("show [vegetables|fruits|weapons|Protections|cares] affiche la liste selectionner");
+
+    
     }
     else if(strcmp(argv[0],"exit")==0){
         *exit=0;        
     }
     
-    else if(strcmp(argv[0],"fight")==0 && strcmp(argv[2],"versus")==0){
+    else if(strcmp(argv[0],"fight")==0 && (strcmp(argv[2],"versus")==0 || strcmp(argv[2],"vs")==0)){
         int condition1=isLeaders(argv[1],0) && isLeaders(argv[3],1);
         int condition2=isLeaders(argv[1],1) && isLeaders(argv[3],0);
         if(condition1 || condition2){
+            
             printf("\t\tFight!\n\n");
             fight(argv[1],argv[3]);
             
         }
-        printf("initil");
     }
     
     
@@ -242,6 +288,7 @@ void commandes(char *command,int *exit){
 int main(){
     int *CA1=(int*)malloc(sizeof(int));
     int *CA2=(int*)malloc(sizeof(int));
+    //clear();
     *CA1=1000;
     *CA2=1000;
 
