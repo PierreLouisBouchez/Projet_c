@@ -112,16 +112,23 @@ int initProtection(Player *p){
         printf("%d\t%-20s\t%d\n",j,Protections[j].nom,Protections[j].CE);
     } 
     printf("\n");
-    while(!(ind>=-1 && ind <= sizeof(Protections)/sizeof(Protection) )){
+    int choix=0;
+    while(choix==0){
         printf("%s > ",p->Pleader.nom);
         scanf("%s",var);
-        if(strcmp(var,"-1")==0){
-            ind=-1;
-        }else{
         ind=isNumber(var);//verif
+        if(ind==-1){
+            choix=1;
+        }else if(ind>=0 && ind <= sizeof(Protections)/sizeof(Protection)){
+            choix=2;
         }
         printf("%d\n",ind);
     };
+    if(choix==2){
+        p->Protection=Protections[ind];
+        p->CE-=Protections[ind].CE;
+    }
+
     free(var);
 }
 
@@ -135,26 +142,39 @@ int initWeapon(Player *p){
         printf("%d\t%-20s\t%d\n",j,Weapons[j].nom,Weapons[j].CE);
     } 
     printf("\n");
-    while(ind<-1 || ind > sizeof(Weapons)/sizeof(Weapon)){
-        
+    int choix=0;
+    while(choix==0){
         printf("%s > ",p->Pleader.nom);
         scanf("%s",var);
-        ind=isNumber(var);
+        ind=isNumber(var);//verif
+        if(ind==-1){
+            choix=1;
+        }else if(ind>=0 && ind <= sizeof(Weapons)/sizeof(Weapon)){
+            choix=2;
+        }
         printf("%d\n",ind);
     };
+    if(choix==2){
+        p->Pweapon=Weapons[ind];
+        p->CE-=Weapons[ind].CE;
+    }
+
     free(var);
 }
 
 void initPlayer(Player *p){
+    p->CE=1000;
     int end=0;
     int i=0;
     while(end==0){
         while(i==0){
             initProtection(p);
+            printf("CE:%d\nProtection:%s\n",p->CE,p->Protection.nom);
             initWeapon(p);
+            printf("CE:%d\nArme:%s\n",p->CE,p->Pweapon.nom);
             i=1;
         }
-        end=1;
+        end++;
     }
 }
 
@@ -165,6 +185,7 @@ void fight(char *p1,char* p2){
     newleader(player2,p2);
     initPlayer(player1);
     initPlayer(player2);
+    printf("Initilisation terminée!");
 }
 
 
@@ -208,7 +229,8 @@ void commandes(char *command,int *exit){
             printf("\t\tFight!\n\n");
             fight(argv[1],argv[3]);
             
-        };
+        }
+        printf("initil");
     }
     
     
