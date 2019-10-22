@@ -85,17 +85,18 @@ int isLeaders(char* a,int type){
     return 0;
 }
 
-int initProtection(Player *p){
+void initProtection(Player *p){
     int var=-2;
     int j=0;
     printf("Choisir votre Protection");
     printf("ID\t Nom\t CE\n");
     for(j=0;j<sizeof(Protections)/sizeof(Protection);j++){
-        printf("%d\t%-20s\n",j,Protections[j].nom,Protections[j].CE);
+        printf("%d\t%-20s\t%-20d\n",j,Protections[j].nom,Protections[j].CE);
     } 
 
     do{
-            scanf("ID : %i",var);
+        scanf("ID : %d",&var);
+        printf("%d",var);
     }while(var<-1 || var >sizeof(Protections)/sizeof(Protection));
     
 }
@@ -104,8 +105,8 @@ int initProtection(Player *p){
 void initPlayer(Player *p){
     int end=0;
     int i=0;
-    while(!end){
-        while(!i){
+    while(end!=1){
+        while(i!=1){
             initProtection(p);
             i=1;
         }
@@ -168,8 +169,7 @@ void commandes(char *command,int *exit){
 
 
 
-int main()
-{
+int main(){
     int *CA1=(int*)malloc(sizeof(int));
     int *CA2=(int*)malloc(sizeof(int));
     *CA1=1000;
