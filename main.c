@@ -199,17 +199,19 @@ void buyCA(Player *p){
     while(error){
         printf("Combien de crédits d'action voulez-vous acheter ? \n");
         scanf("%s",CA);
-        if(!isNumber(CA)) break;
-
+        CA2=isNumber(CA);
+        if(CA2==-2) continue;
+        if(CA2<=p->CE && CA2<=50){
+            error=0;
+            p->CA+=CA2;
+            p->CE-=CA2;
+        }
     }
 }
 
 
 
 void initPlayer(Player *p){
-    p->CE=1000;
-    int end=0;
-    int i=0;
     clear();
     printf("\t\t%s\n\n",p->Pleader.nom);
     initProtection(p);
@@ -228,12 +230,73 @@ void printPlayer(Player *p){
     printf("CE : %d\nArme : %s\nProtection : %s\nSoin : %s\n\n",p->CE,p->Pweapon.nom,p->Protection.nom,p->Pcare.nom);
 }
 
+void commandes(char *command,int *exit,Player *p1,Player *p2,int inDuel){
+    int i;
+    int j=0;
+    int h=0;
+    char argv[5][50]={{0},{0}};
+    if(command!=NULL){
+    for(i=0;i<strlen(command);i++){
+        if(command[i]==' ' || command[i]=='\n'){
+            j++;
+            h=0;
+            do{i++;}while(command[i]==' ');
+        }
+        if(isalpha(command[i]) || isdigit(command[i])){
+            argv[j][h]=command[i];
+            h++;
+        }
+    }
+       
+    //printf("%s,%s,%s,%s",argv[0],argv[1],argv[2],argv[3]);
+    if(strcmp(argv[0],"show")==0){
+        if(*argv[1]!=0){
+            clear();
+            show(argv[1],argv[2]);
+        }
+    if(strcmp(argv[0],"help")==0){
+            clear();
+            printf("show [vegetables|fruits|weapons|Protections|cares] affiche la liste selectionner\n");
+            printf("show [vegetable|fruit|weapon|Protections|care] affiche le n-ieme element de la liste selectionner\n");
+
+        
+        }
+        else if(strcmp(argv[0],"exit")==0){
+            *exit=0;        
+        }
+        
+        else if(strcmp(argv[0],"fight")==0 && (strcmp(argv[2],"versus")==0 || strcmp(argv[2],"vs")==0)){
+            int condition1=isLeaders(argv[1],0,p1) && isLeaders(argv[3],1,p2);
+            int condition2=isLeaders(argv[1],1,p1) && isLeaders(argv[3],0,p2);
+            if(condition1 || condition2){
+                clear();
+                printf("\t\tFight!\n\n");
+                fight(p1,p2);
+                
+            }
+        }else{
+            printf("Error synthax\n");
+            }
+    }
+    }else{
+        getchar();
+    }
+
+    
+}
+
 void fight(Player *p1,Player *p2){
     initPlayer(p1);
     initPlayer(p2);
-    printPlayer(p1);
-    printPlayer(p2);
-    
+    int *end=(int *)malloc(sizeof(int));
+    *end=1;
+    while(*end==1){
+        printf( "\n>");
+        char *command=(char*)malloc(50*sizeof(char));
+        scanf ("%m[^\n]%*c",&command);
+        fightcommandes(command,p1,p2);
+        free(command);
+    }
 }
 
 
@@ -249,47 +312,48 @@ void commandes(char *command,int *exit,Player *p1,Player *p2,int inDuel){
             j++;
             h=0;
             do{i++;}while(command[i]==' ');
-        }else if(isalpha(command[i]) || isdigit(command[i])){
+        }
+        if(isalpha(command[i]) || isdigit(command[i])){
             argv[j][h]=command[i];
             h++;
         }
     }
        
-    printf("%s,%s,%s,%s",argv[0],argv[1],argv[2],argv[3]);
-    
+    //printf("%s,%s,%s,%s",argv[0],argv[1],argv[2],argv[3]);
     if(strcmp(argv[0],"show")==0){
         if(*argv[1]!=0){
             clear();
             show(argv[1],argv[2]);
         }
-
-    }else if(strcmp(argv[0],"help")==0){
-        clear();
-        printf("show [vegetables|fruits|weapons|Protections|cares] affiche la liste selectionner");
-
-    
-    }
-    else if(strcmp(argv[0],"exit")==0){
-        *exit=0;        
-    }
-    
-    else if(strcmp(argv[0],"fight")==0 && (strcmp(argv[2],"versus")==0 || strcmp(argv[2],"vs")==0)){
-        int condition1=isLeaders(argv[1],0,p1) && isLeaders(argv[3],1,p2);
-        int condition2=isLeaders(argv[1],1,p1) && isLeaders(argv[3],0,p2);
-        if(condition1 || condition2){
+    if(strcmp(argv[0],"help")==0){
             clear();
-            printf("\t\tFight!\n\n");
-            fight(p1,p2);
-            
+            printf("show [vegetables|fruits|weapons|Protections|cares] affiche la liste selectionner\n");
+            printf("show [vegetable|fruit|weapon|Protections|care] affiche le n-ieme element de la liste selectionner\n");
+
+        
         }
+        else if(strcmp(argv[0],"exit")==0){
+            *exit=0;        
+        }
+        
+        else if(strcmp(argv[0],"fight")==0 && (strcmp(argv[2],"versus")==0 || strcmp(argv[2],"vs")==0)){
+            int condition1=isLeaders(argv[1],0,p1) && isLeaders(argv[3],1,p2);
+            int condition2=isLeaders(argv[1],1,p1) && isLeaders(argv[3],0,p2);
+            if(condition1 || condition2){
+                clear();
+                printf("\t\tFight!\n\n");
+                fight(p1,p2);
+                
+            }
+        }else{
+            printf("Error synthax\n");
+            }
+    }
     }else{
-        printf("Error synthax\n");
-    
-    
-}
+        getchar();
     }
 
-
+    
 }
 
 
@@ -302,16 +366,15 @@ void main(){
     clear();
     Player *player1=(Player*)calloc(1,sizeof(Player));
     Player *player2=(Player*)calloc(1,sizeof(Player));
-    player1->CE=1000;
-    player2->CE=1000;
+    player1->CE=10;
+    player2->CE=7;
     printf(RED "\nCredit Player 1 : %d" YELLOW "\nCredit Player 2 : %d \n" RESET,player1->CE,player2->CE);   
     int *exit=(int *)malloc(sizeof(int));
     *exit=1;
     while(*exit==1){
         printf( "\n>");
-        
         char *command=(char*)malloc(50*sizeof(char));
-        scanf ("%m[^\n]%*c", command);
+        scanf ("%m[^\n]%*c",&command);
         commandes(command,exit,player1,player2,0);
         free(command);
     }
