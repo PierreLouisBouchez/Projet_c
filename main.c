@@ -75,30 +75,25 @@ void show(char *a,char* ind){
     }
 }
 
-int isLeaders(char* a,int type){
+int isLeaders(char* a,int type,Player *p){
     int j;
     int taille = sizeof(Leaders)/sizeof(Leader);
+    Leader lead;  
     for (j = 0; j < taille; j++){
         if(strcmp(Leaders[j].nom,a)==0 && Leaders[j].Type==type){
-            return 1;
+            lead=Leaders[j];
+            if(p->CE>=Leaders[j].CE){
+                p->CE-=lead.CE;
+                p->Pleader=lead;
+                return 1;
+            }
         }
     } 
     return 0;
 }
 
 
-void newleader(Player* player,char* p){
-    int j;
-    int taille = sizeof(Leaders)/sizeof(Leader);
-    Leader *lead=malloc(sizeof(Leader));
-    for (j = 0; j < taille; j++){
-        if(strcmp(Leaders[j].nom,p)==0){
-            *lead=Leaders[j];
-        }
-    } 
-    player->Pleader=*lead;
 
-}
 
 void initHeader(){
     printf("ID\t Nom\t\tCE\n");
@@ -209,6 +204,8 @@ void buyCA(Player *p){
     }
 }
 
+
+
 void initPlayer(Player *p){
     p->CE=1000;
     int end=0;
@@ -221,6 +218,7 @@ void initPlayer(Player *p){
     clear();
     initWeapon(p);
     clear();
+    getchar();
     buyCA(p);
     getchar();
 }
@@ -230,46 +228,42 @@ void printPlayer(Player *p){
     printf("CE : %d\nArme : %s\nProtection : %s\nSoin : %s\n\n",p->CE,p->Pweapon.nom,p->Protection.nom,p->Pcare.nom);
 }
 
-void fight(char *p1,char* p2){
-    Player *player1=(Player*)calloc(1,sizeof(Player));
-    Player *player2=(Player*)calloc(1,sizeof(Player));
-    newleader(player1,p1);
-    newleader(player2,p2);
-    initPlayer(player1);
-    initPlayer(player2);
-    printPlayer(player1);
-    printPlayer(player2);
+void fight(Player *p1,Player *p2){
+    initPlayer(p1);
+    initPlayer(p2);
+    printPlayer(p1);
+    printPlayer(p2);
     
 }
 
 
 
-void commandes(char *command,int *exit){
+void commandes(char *command,int *exit,Player *p1,Player *p2,int inDuel){
     int i;
     int j=0;
     int h=0;
     char argv[5][50]={{0},{0}};
-    
-    
+    if(command!=NULL){
     for(i=0;i<strlen(command);i++){
         if(command[i]==' ' || command[i]=='\n'){
             j++;
             h=0;
             do{i++;}while(command[i]==' ');
-        }
-        if(isalpha(command[i]) || isdigit(command[i])){
+        }else if(isalpha(command[i]) || isdigit(command[i])){
             argv[j][h]=command[i];
             h++;
         }
     }
-    //printf("%s,%s,%s,%s\",argv[0],argv[1],argv[2],argv[3]);
+       
+    printf("%s,%s,%s,%s",argv[0],argv[1],argv[2],argv[3]);
+    
     if(strcmp(argv[0],"show")==0){
         if(*argv[1]!=0){
             clear();
             show(argv[1],argv[2]);
         }
-    }
-    else if(strcmp(argv[0],"help")==0){
+
+    }else if(strcmp(argv[0],"help")==0){
         clear();
         printf("show [vegetables|fruits|weapons|Protections|cares] affiche la liste selectionner");
 
@@ -280,44 +274,47 @@ void commandes(char *command,int *exit){
     }
     
     else if(strcmp(argv[0],"fight")==0 && (strcmp(argv[2],"versus")==0 || strcmp(argv[2],"vs")==0)){
-        int condition1=isLeaders(argv[1],0) && isLeaders(argv[3],1);
-        int condition2=isLeaders(argv[1],1) && isLeaders(argv[3],0);
+        int condition1=isLeaders(argv[1],0,p1) && isLeaders(argv[3],1,p2);
+        int condition2=isLeaders(argv[1],1,p1) && isLeaders(argv[3],0,p2);
         if(condition1 || condition2){
             clear();
             printf("\t\tFight!\n\n");
-            fight(argv[1],argv[3]);
+            fight(p1,p2);
             
         }
     }else{
-        clear();
-        printf(RED "Erreur, type help for syntax\n");
+        printf("Error synthax\n");
+    
+    
+}
     }
-    
-    
+
+
 }
 
 
 
 
-int main(){
+
+void main(){
     int *CA1=(int*)malloc(sizeof(int));
     int *CA2=(int*)malloc(sizeof(int));
     clear();
-    *CA1=1000;
-    *CA2=1000;
-
-    printf(RED "\nCredit Player 1 : %d" YELLOW "\nCredit Player 2 : %d \n" RESET,*CA1,*CA2);   
+    Player *player1=(Player*)calloc(1,sizeof(Player));
+    Player *player2=(Player*)calloc(1,sizeof(Player));
+    player1->CE=1000;
+    player2->CE=1000;
+    printf(RED "\nCredit Player 1 : %d" YELLOW "\nCredit Player 2 : %d \n" RESET,player1->CE,player2->CE);   
     int *exit=(int *)malloc(sizeof(int));
     *exit=1;
     while(*exit==1){
         printf( "\n>");
         
-        char *command=malloc(50*sizeof(char));
-        scanf ("%m[^\n]%*c", &command);
-        commandes(command,exit);
+        char *command=(char*)malloc(50*sizeof(char));
+        scanf ("%m[^\n]%*c", command);
+        commandes(command,exit,player1,player2,0);
         free(command);
     }
     
 
-    return 0;
 }
