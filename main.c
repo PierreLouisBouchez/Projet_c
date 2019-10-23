@@ -8,6 +8,7 @@
 
 
 
+
 int isNumber(char* arg){
     int num;
     num = atoi(arg);
@@ -152,7 +153,7 @@ void initWeapon(Player *p){
         printf("%s-> ",p->Pleader.nom);
         scanf("%s",var);
         ind=isNumber(var);//verif
-        if(ind>=0 && ind <= sizeof(Weapons)/sizeof(Weapon)){
+        if(ind>=0 && ind < sizeof(Weapons)/sizeof(Weapon)){
             choix=1;
         }
 }
@@ -180,7 +181,7 @@ void initCare(Player *p){
         ind=isNumber(var);//verif
         if(ind==-1){
             choix=1;
-        }else if(ind>=0 && ind <= sizeof(Cares)/sizeof(Care)){
+        }else if(ind>=0 && ind < sizeof(Cares)/sizeof(Care)){
             choix=2;
         }
     };
@@ -196,6 +197,17 @@ void initCare(Player *p){
     free(var);
 }
 
+void buyCA(Player *p){
+    int error=1;
+    char *CA=malloc(20*sizeof(char));
+    int CA2=p->CE;
+    while(error){
+        printf("Combien de crédits d'action voulez-vous acheter ? \n");
+        scanf("%s",CA);
+        if(!isNumber(CA)) break;
+
+    }
+}
 
 void initPlayer(Player *p){
     p->CE=1000;
@@ -209,6 +221,7 @@ void initPlayer(Player *p){
     clear();
     initWeapon(p);
     clear();
+    buyCA(p);
     getchar();
 }
 
@@ -236,7 +249,7 @@ void commandes(char *command,int *exit){
     int j=0;
     int h=0;
     char argv[5][50]={{0},{0}};
-    clear();
+    
     
     for(i=0;i<strlen(command);i++){
         if(command[i]==' ' || command[i]=='\n'){
@@ -252,14 +265,12 @@ void commandes(char *command,int *exit){
     //printf("%s,%s,%s,%s\",argv[0],argv[1],argv[2],argv[3]);
     if(strcmp(argv[0],"show")==0){
         if(*argv[1]!=0){
+            clear();
             show(argv[1],argv[2]);
-        }
-        else{
-            printf("Erreur, type help for syntax\n");
         }
     }
     else if(strcmp(argv[0],"help")==0){
-        
+        clear();
         printf("show [vegetables|fruits|weapons|Protections|cares] affiche la liste selectionner");
 
     
@@ -272,11 +283,14 @@ void commandes(char *command,int *exit){
         int condition1=isLeaders(argv[1],0) && isLeaders(argv[3],1);
         int condition2=isLeaders(argv[1],1) && isLeaders(argv[3],0);
         if(condition1 || condition2){
-            
+            clear();
             printf("\t\tFight!\n\n");
             fight(argv[1],argv[3]);
             
         }
+    }else{
+        clear();
+        printf(RED "Erreur, type help for syntax\n");
     }
     
     
@@ -288,15 +302,15 @@ void commandes(char *command,int *exit){
 int main(){
     int *CA1=(int*)malloc(sizeof(int));
     int *CA2=(int*)malloc(sizeof(int));
-    //clear();
+    clear();
     *CA1=1000;
     *CA2=1000;
 
-    printf("Credit player 1 : %d  \nCredit player 2 : %d\n",*CA1,*CA2);   
+    printf(RED "\nCredit Player 1 : %d" YELLOW "\nCredit Player 2 : %d \n" RESET,*CA1,*CA2);   
     int *exit=(int *)malloc(sizeof(int));
     *exit=1;
     while(*exit==1){
-        printf("\n>");
+        printf( "\n>");
         
         char *command=malloc(50*sizeof(char));
         scanf ("%m[^\n]%*c", &command);
