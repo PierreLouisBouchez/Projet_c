@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define clear() printf("\n")
-//\e[1;1H\e[2J\n")
+#define clear() printf("\e[1;1H\e[2J\n")
 #define txt(c) #c
 
 Player player1;
@@ -80,50 +79,41 @@ void printPlayer(Player p){
 }
 
 
-void initProtection(Player *p,int *CE){
-    int ind=-2;
-    int j=0;
-    char *var=malloc(20*sizeof(char));
-    printf("\tChoisissez votre Protection\n\n");
-    printf("ID\t Nom\t\tCE\n");
-    printf("-1\tAucun choix\n");
-    for(j=0;j<sizeof(Protections)/sizeof(Protection);j++){
-        printf("%d\t%-20s\t%d\n",j,Protections[j].nom,Protections[j].CE);
-    } 
-    printf("\n");
-    int choix=0;
-    int CE1;
-    while(choix==0){
-        printf("%s-> ",p->Pleader.nom);
-        scanf("%s",var);
-        ind=isNumber(var);//verif
-        if(ind==-1){
-            choix=1;
-        }else if(ind>=0 && ind < sizeof(Protections)/sizeof(Protection)){
-            CE1=Protections[ind].CE;
-            if( CE1 <= *CE){
-                printf("Vous avez assez de points\n");
-                choix=2;
-            }else{
-                printf("Vous n'avez que %d CE\n",*CE);
-            }
-            
+void initProtection(Player *p){
+        int choix=0;
+        int CE1;
+        int j;
+        int ind=0;
+        char *var=malloc(20*sizeof(char));
+        printf("\tChoisissez votre Protection\n\nID\t Nom\t\tCE\n-1\tAucun choix\n");
+        for(j=0;j<sizeof(Protections)/sizeof(Care);j++){
+            printf("%d\t%-20s\t%d\n",j,Protections[j].nom,Protections[j].CE);
         }
-    };
-    if(choix==2){
-        p->Protection=Protections[ind];
-        p->CE-=CE1;
-        *CE-=CE1;
-    }else{
-        Protection c;
-        c.nom="Aucune";
-        p->Protection=c;
-    }
+        do{
+            printf("%s-> ",p->Pleader.nom);
+            scanf("%s",var);
+            ind=atoi(var);//verif
+            if(ind==-1){
+                choix=1;
+                p->Protection.nom="Aucune";
+            }else if(ind>=0 && ind < sizeof(Protections)/sizeof(Care)){
+                CE1=Protections[ind].CE;
+                if( CE1 <= p->CEinit){
+                    choix=1;
+                    printf("Vous avez assez de points\n");
+                    p->Protection=Protections[ind];
+                    p->CEinit-=CE1;
+                }else{
+                    printf("Vous n'avez que %d CE disponible\n",p->CEinit);
+                }
+                
+            }
+        }while(choix==0);
     free(var);
 }
 
 
-void initWeapon(Player *p,int *CE){
+void initWeapon(Player *p){
     int ind=0;
     int j=0;
     char *var=malloc(20*sizeof(char));
@@ -135,95 +125,82 @@ void initWeapon(Player *p,int *CE){
     printf("\n");
     int choix=0;
     int CE1;
-    while(choix==0){
+    do{
         printf("%s-> ",p->Pleader.nom);
         scanf("%s",var);
         ind=isNumber(var);//verif
         if(ind>=0 && ind < sizeof(Weapons)/sizeof(Weapon)){
             CE1=Weapons[ind].CE;
-            if( CE1 <= *CE){
+            if( CE1 <= p->CEinit){
                 printf("Vous avez assez de points\n");
                 choix=1;
+                p->Pweapon=Weapons[ind];
+                p->CEinit-=Weapons[ind].CE;
             }
             else{
-                printf("Vous n'avez que %d CE\n",*CE);
+                printf("Vous n'avez que %d CE\n",p->CEinit);
             }
             
         }
-    };
-    p->Pweapon=Weapons[ind];
-    p->CE-=Weapons[ind].CE;
-    
-
+    }while(choix==0);
     free(var);
 }
 
 
-void initCare(Player *p,int *CE){
-    int ind=-2;
-    int j=0;
-    char *var=malloc(20*sizeof(char));
-    printf("\tChoisissez votre Soin\n\n");
-    printf("ID\t Nom\t\tCE\n");
-    printf("-1\tAucun choix\n");
-    for(j=0;j<sizeof(Cares)/sizeof(Care);j++){
-        printf("%d\t%-20s\t%d\n",j,Cares[j].nom,Cares[j].CE);
-    } 
-    printf("\n");
-    int choix=0;
-    int CE1;
-    while(choix==0){
-        printf("%s-> ",p->Pleader.nom);
-        scanf("%s",var);
-        ind=isNumber(var);//verif
-        if(ind==-1){
-            choix=1;
-        }else if(ind>=0 && ind < sizeof(Cares)/sizeof(Care)){
-            CE1=Cares[ind].CE;
-            if( CE1 <= *CE){
-                printf("Vous avez assez de points\n");
-                choix=2;
-            }else{
-                printf("Vous n'avez que %d CE\n",*CE);
-            }
-            
+void initCare(Player *p){
+        int choix=0;
+        int CE1;
+        int j;
+        int ind=0;
+        char *var=malloc(20*sizeof(char));
+        printf("\tChoisissez votre Soin\n\nID\t Nom\t\tCE\n-1\tAucun choix\n");
+        for(j=0;j<sizeof(Cares)/sizeof(Care);j++){
+            printf("%d\t%-20s\t%d\n",j,Cares[j].nom,Cares[j].CE);
         }
-    };
-    if(choix==2){
-        p->Pcare=Cares[ind];
-        p->CE-=CE1;
-        *CE-=CE1;
-    }else{
-        Care c;
-        c.nom="Aucune";
-        p->Pcare=c;
-    }
-
+        do{
+            printf("%s-> ",p->Pleader.nom);
+            scanf("%s",var);
+            ind=atoi(var);//verif
+            if(ind==-1){
+                choix=1;
+                p->Pcare.nom="Aucune";
+            }else if(ind>=0 && ind < sizeof(Cares)/sizeof(Care)){
+                CE1=Cares[ind].CE;
+                if( CE1 <= p->CEinit){
+                    choix=1;
+                    printf("Vous avez assez de points\n");
+                    p->Pcare=Cares[ind];
+                    p->CEinit-=CE1;
+                }else{
+                    printf("Vous n'avez que %d CE disponible\n",p->CEinit);
+                }
+                
+            }
+        }while(choix==0);
     free(var);
 }
 
-void buyCA(Player *p,int *CE){
-    int error=1;
+void buyCA(Player *p){
+    int res=1;
     char *CA=malloc(20*sizeof(char));
     int CA2=0;
-    while(error){
-        printf("Combien de crédits d'action voulez-vous acheter ? \n");
+
+    do{
+        printf("Combien de crédits d'action voulez-vous acheter ? \n Il vous reste %d CE\n",p->CEinit);
         scanf("%s",CA);
-        CA2=isNumber(CA);
-        if(CA2==-2) continue;
-        if(CA2<=*CE && CA2<=50){
-            printf("Vous avez assez de points\n");
-            error=0;
+        CA2=atoi(CA);
+        if(CA2>=0 && CA2<=p->CEinit){
+            printf("Vous avez acheter %d crédits d'action \n",CA2);
+            res=0;
             p->CA+=CA2;
-            p->CE-=CA2;
+            p->CEinit-=CA2;
         }else{
-            printf("Vous n'avez que %d CE\n",p->CE);
+            printf("Vous n'avez que %d CE\n",p->CEinit);
         }
-    }
+    }while(res);
 }
 
-/*
-void fightcommandes(char *command,Player *p1,Player *p2){
+void fightcommandes(char *command){
     int i;
     int j=0;
     int h=0;
@@ -257,13 +234,16 @@ void fightcommandes(char *command,Player *p1,Player *p2){
         getchar();
     }
 }
-*/
 
-int finish(int *end){
-    if (player1.CE < Weapons[0].CE || player2.CE < Weapons[0].CE){
+
+
+
+
+void finish(int *end){
+    if (player1.CE == 1 || player2.CE ==1){
         *end=0;
         printf("Fin de partie");
-        if(player1.CE <player2.CE){
+        if(player1.CE < player2.CE){
             printf("Victoire Player 2 !");
         }else{
             printf("Victoire Player 1 !");
@@ -272,30 +252,42 @@ int finish(int *end){
     }
 }
 
-void initPlayer(Player p,int* CE){
+void initPlayer(Player p){
     clear();
     printf("\t\t%s\n\n",p.Pleader.nom);
-    initProtection(&p,CE);
-    printPlayer(p);
-    printf("CE en cours :%d\n",*CE);
-    clear();
-    initCare(&p,CE);
-    printPlayer(p);
-    printf("CE en cours :%d\n",*CE);
-    clear();
-    initWeapon(&p,CE);
-    printPlayer(p);
-    printf("CE en cours :%d\n",*CE);
-    clear();
-    getchar();
-    buyCA(&p,CE);
-    printPlayer(p);
-    printf("CE en cours :%d\n",*CE);
-    getchar();
+    if(p.CEinit-(Weapons[0].CE)>0){
+        printf("Il vous reste %d CE\n",p.CEinit);
+        initWeapon(&p);
+        printPlayer(p);
+        clear();
+        if(p.CEinit-(Protections[0].CE)>0){
+            printf("Il vous reste %d CE\n",p.CEinit);
+            initProtection(&p);
+            printPlayer(p);
+            clear();
+        }else{
+            p.Protection.nom="Aucune";
+        }
+        if(p.CEinit-(Cares[0].CE)>0){
+            printf("Il vous reste %d CE\n",p.CEinit);
+            initCare(&p);
+            printPlayer(p);
+            clear();
+        }else{
+            p.Pcare.nom="Aucune";
+        }
+        if(p.CEinit>0){
+            printf("Il vous reste %d CE\n",p.CEinit);
+            buyCA(&p);
+            printPlayer(p);
+            getchar();
+        }
+    }
+    p.CE+=p.CEinit;
 }
 
 void fight(){
-    printf("Que le duel commence");
+    printf("Que le duel commence\n");
     int CE,CE1,CE2;
     CE=50;
     CE1=player1.CE;
@@ -307,14 +299,17 @@ void fight(){
             CE=CE1;
         }
     }
-    printf("%d",CE);
+    player1.CEinit=CE;
+    player2.CEinit=CE;
+    player1.CE-=CE;
+    player2.CE-=CE;
     int findepartie=1;
-    int end;;
-    while(findepartie){
+    int end;
+    while(findepartie==1){
         finish(&findepartie);
-        if(!findepartie){
-            initPlayer(player1,&CE);
-            initPlayer(player2,&CE);
+        if(findepartie==1){
+            initPlayer(player1);
+            initPlayer(player2);
             end=1;
             while(end==1){
                 printf( "\n>");
@@ -390,10 +385,10 @@ void commandes(char *command,int *exit){
             LeaderSelection(argv[3],&player2);
             //printf("%s,%s",player1.Pleader.nom,player2.Pleader.nom);
             if(strcmp(player1.Pleader.nom,"Aucun")==0){
-                printf("\nPlayer 1 pas assez des crédits  CE : %d \n",player1.CE);
+                printf("\nPlayer 1 pas assez des crédits  CE : %d ,pour le champion %s \n",player1.CE ,argv[1]);
             }
             if(strcmp(player2.Pleader.nom,"Aucun")==0){
-                printf("\nPlayer 2 pas assez des crédits  CE : %d \n",player2.CE);
+                printf("\nPlayer 2 pas assez des crédits  CE : %d ,pour le champion %s \n",player2.CE,argv[2]);
             }else{
                 printf("\t\tFight!\n\n");
                 player1.CE-=player1.Pleader.CE;
@@ -414,6 +409,7 @@ void commandes(char *command,int *exit){
 void main(){
     player1.CE=40;
     player2.CE=40;
+    clear();
     printf(RED "\nCredit Player 1 : %d" YELLOW "\nCredit Player 2 : %d \n" RESET,player1.CE,player2.CE);   
     int exit=1;
     while(exit==1){
