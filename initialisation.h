@@ -8,6 +8,7 @@ typedef struct {
     int Resistance;
     int PVMax;
     int CE;
+    char *sprite;
 }Leader;
 
 typedef struct
@@ -51,18 +52,18 @@ typedef struct{
 
 
 Leader Leaders[]={
-    {"Haricot",1,10,10,40,5},
-    {"Fenouil",1, 12, 15, 40, 7},
-    {"Poireau",1 ,15, 20 ,60, 10},
-    {"Aubergine", 1 ,20 ,20 ,60 ,15},
-    {"Courge" ,1 ,20 ,25 ,80 ,20},
-    {"Carotte",1, 25, 25, 80, 25},
-    {"Banane",0,10 ,10 ,40 ,5},
-    {"Kiwi",0,12, 15, 40, 7},
-    {"Poire",0, 15, 20, 60, 10},
-    {"Pomme", 0 ,20 ,20, 60, 15},
-    {"Ananas", 0, 20, 25, 80, 20},
-    {"Durian", 0,25 ,25 ,80 ,25}
+    {"Haricot",1,10,10,40,5,"/()/"},
+    {"Fenouil",1, 12, 15, 40, 7,"|{()"},
+    {"Poireau",1 ,15, 20 ,60, 10,"{/||"},
+    {"Aubergine", 1 ,20 ,20 ,60 ,15,"()()"},
+    {"Courge" ,1 ,20 ,25 ,80 ,20,"/)(/"},
+    {"Carotte",1, 25, 25, 80, 25,"\\, V"},
+    {"Banane",0,10 ,10 ,40 ,5,"|\\|/"},
+    {"Kiwi",0,12, 15, 40, 7,"   0"},
+    {"Poire",0, 15, 20, 60, 10," o U"},
+    {"Pomme", 0 ,20 ,20, 60, 15," , O"},
+    {"Ananas", 0, 20, 25, 80, 20,"\\/{}"},
+    {"Durian", 0,25 ,25 ,80 ,25,"..()"}
 };
 
 Weapon Weapons[]={

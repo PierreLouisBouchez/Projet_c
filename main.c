@@ -290,15 +290,50 @@ void initPlayer(Player p){
 
 
 void printTerrain(int col,int row){
-    int i;
-    int j;
+    int i,j;
+    int pos1;
+    int pos2;
     int row2=row*5/6;
+    player2.pos=col-1;
+    pos1=player1.pos;
+    pos2=player2.pos;
     printf(OBLUE);
-    for(i=0;i<row2;i++){
+    for(i=0;i<row2-2;i++){
         for(j=0;j<col;j++){
             printf(" ");
         }
     }
+    //player
+    for(j=0;j<pos1;j++){
+            printf(" ");
+    }
+    printf("%c%c",player1.Pleader.sprite[0],player1.Pleader.sprite[1]);
+
+    for(j=pos1+2;j<pos2-1;j++){
+            printf(" ");
+    }
+    printf("%c%c",player2.Pleader.sprite[0],player2.Pleader.sprite[1]);
+
+
+    for(j=pos2+1;j<col;j++){
+            printf(" ");
+    }
+    for(j=0;j<pos1;j++){
+            printf(" ");
+    }
+    printf("%c%c",player1.Pleader.sprite[2],player1.Pleader.sprite[3]);
+
+    for(j=pos1+2;j<pos2-1;j++){
+            printf(" ");
+    }
+    printf("%c%c",player2.Pleader.sprite[2],player2.Pleader.sprite[3]);
+
+
+    for(j=pos2;j<col-1;j++){
+            printf(" ");
+    }
+    //fin
+
     printf(OGREEN);
     for(i=1+row2;i<row;i++){
         for(j=0;j<col;j++){
@@ -306,7 +341,7 @@ void printTerrain(int col,int row){
         }
     }
     
-    printf(BLACK"\e[%d;%dH Je BAise ta mere",row/2,1);  
+     
     printf(RESET"\e[%d;%dH",row,1);
 }
 

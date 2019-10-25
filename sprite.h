@@ -34,8 +34,3 @@
 #define OCYAN "\033[46m"
 #define OWHITE "\033[47m"
 
-typedef struct {
-    /* data */
-}sprite;
-
-
