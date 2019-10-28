@@ -9,6 +9,7 @@ typedef struct {
     int PVMax;
     int CE;
     char *sprite;
+    
 }Leader;
 
 typedef struct

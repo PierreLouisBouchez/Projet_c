@@ -12,7 +12,7 @@
 
 Player player1;
 Player player2;
-
+struct winsize w;
 
 
 
@@ -78,9 +78,9 @@ void show(char *a,char* ind){
 }
 
 
-void printPlayer(Player p){
-    printf("\t%s\n\n",p.Pleader.nom);
-    printf("\tCE : %d\n\tArme : %s\n\tProtection : %s\n\tSoin : %s\n\n",p.CE,p.Pweapon.nom,p.Protection.nom,p.Pcare.nom);
+void printPlayer(Player *p){
+    printf("\t%s\n\n",p->Pleader.nom);
+    printf("\tCE : %d\n\tArme : %s\n\tProtection : %s\n\tSoin : %s\n\n",p->CE,p->Pweapon.nom,p->Protection.nom,p->Pcare.nom);
 }
 
 
@@ -205,7 +205,13 @@ void buyCA(Player *p){
     }while(res);
 }
 
-void fightcommandes(char *command){
+void showPlayer(Player *p){
+    int i,j;
+    printf(BLACK "\e[%d;%dH Je test",w.ws_row/2,1);
+
+}
+
+void fightcommandes(char *command,Player *p){
     int i;
     int j=0;
     int h=0;
@@ -225,8 +231,7 @@ void fightcommandes(char *command){
     if(strcmp(argv[0],"show")==0){
         if(*argv[1]==0){
             clear();
-            printPlayer(player1);
-            printPlayer(player2);
+            showPlayer(p);    
         }
     }else if(strcmp(argv[0],"end")==0){
             printf("End");  
@@ -253,43 +258,45 @@ void finish(int *end){
     }
 }
 
-void initPlayer(Player p){
+void initPlayer(Player *p){
     clear();
-    printf("\t\t%s\n\n",p.Pleader.nom);
-    if(p.CEinit-(Weapons[0].CE)>0){
-        printf("\tIl vous reste %d CE\n",p.CEinit);
-        initWeapon(&p);
+    printf("\t\t%s\n\n",p->Pleader.nom);
+    if(p->CEinit-(Weapons[0].CE)>0){
+        printf("\tIl vous reste %d CE\n",p->CEinit);
+        initWeapon(p);
         printPlayer(p);
         clear();
-        if(p.CEinit-(Protections[0].CE)>0){
-            printf("\tIl vous reste %d CE\n",p.CEinit);
-            initProtection(&p);
+        if(p->CEinit-(Protections[0].CE)>0){
+            printf("\tIl vous reste %d CE\n",p->CEinit);
+            initProtection(p);
             printPlayer(p);
             clear();
         }else{
-            p.Protection.nom="Aucune";
+            p->Protection.nom="Aucune";
         }
-        if(p.CEinit-(Cares[0].CE)>0){
-            printf("\tIl vous reste %d CE\n",p.CEinit);
-            initCare(&p);
+        if(p->CEinit-(Cares[0].CE)>0){
+            printf("\tIl vous reste %d CE\n",p->CEinit);
+            initCare(p);
             printPlayer(p);
             clear();
         }else{
-            p.Pcare.nom="Aucune";
+            p->Pcare.nom="Aucune";
         }
-        if(p.CEinit>0){
-            printf("\tIl vous reste %d CE\n",p.CEinit);
-            buyCA(&p);
+        if(p->CEinit>0){
+            printf("\tIl vous reste %d CE\n",p->CEinit);
+            buyCA(p);
             printPlayer(p);
             
         }
     }
     getchar();
-    p.CE+=p.CEinit;
+    p->CE+=p->CEinit;
 }
 
 
-void printTerrain(int col,int row){
+void printTerrain(){
+    int col=w.ws_col;
+    int row=w.ws_row;
     int i,j;
     int pos1;
     int pos2;
@@ -298,8 +305,8 @@ void printTerrain(int col,int row){
     pos1=player1.pos;
     pos2=player2.pos;
     printf(OBLUE);
-    for(i=0;i<row2-2;i++){
-        for(j=0;j<col;j++){
+    for(i=0;i<w.ws_row*5/6-2;i++){
+        for(j=0;j<w.ws_col;j++){
             printf(" ");
         }
     }
@@ -307,7 +314,7 @@ void printTerrain(int col,int row){
     for(j=0;j<pos1;j++){
             printf(" ");
     }
-    printf("%c%c",player1.Pleader.sprite[0],player1.Pleader.sprite[1]);
+    printf(GREEN "%c%c",player1.Pleader.sprite[0],player1.Pleader.sprite[1]);
 
     for(j=pos1+2;j<pos2-1;j++){
             printf(" ");
@@ -347,7 +354,7 @@ void printTerrain(int col,int row){
 
 void fight(){
     printf("\n\t\tQue le duel commence !!\n\n");
-    int CE,CE1,CE2;
+    int CE,CE1,CE2,tour;
     CE=50;
     CE1=player1.CE;
     CE2=player2.CE;
@@ -364,20 +371,30 @@ void fight(){
     player2.CE-=CE;
     int findepartie=1;
     int end;
-    struct winsize w;
-    ioctl(0, TIOCGWINSZ, &w);
+    
+    
     while(findepartie==1){
         finish(&findepartie);
         if(findepartie==1){
-            initPlayer(player1);
-            initPlayer(player2);
+            initPlayer(&player1);
+            initPlayer(&player2);
             end=1;
+            tour=1;
             while(end==1){
-                printTerrain(w.ws_col,w.ws_row);
-                printf( "\n>");
                 char *command=(char*)malloc(50*sizeof(char));
-                scanf ("%m[^\n]%*c",&command);
-                fightcommandes(command);
+                printTerrain();
+                if(tour==1){
+                    printf( "\n%s (%d) >",player1.Pleader.nom,player1.CA);
+                    scanf ("%m[^\n]%*c",&command);
+                    fightcommandes(command,&player1);
+                    tour++;
+                }else{
+                    printf( "\n%s (%d) >",player1.Pleader.nom,player1.CA);
+                    scanf ("%m[^\n]%*c",&command);
+                    fightcommandes(command,&player2);
+                    tour--;
+                }
+                
                 free(command);
             }
         }
@@ -471,6 +488,7 @@ void commandes(char *command,int *exit){
 void main(){
     player1.CE=40;
     player2.CE=40;
+    ioctl(0, TIOCGWINSZ, &w);
     clear();
     printf(RED "\n\tCredit Player 1 : %d" YELLOW "\n\n\tCredit Player 2 : %d \n" RESET,player1.CE,player2.CE);
     int exit=1;
