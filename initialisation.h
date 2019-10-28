@@ -47,6 +47,7 @@ typedef struct{
     Care Pcare;
     int CE;
     int CA;
+    int CAcurrent;
     int CEinit;
     int pos;    
 }Player;
