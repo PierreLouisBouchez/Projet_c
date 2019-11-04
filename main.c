@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include "color.h"
 #define clear() printf("\e[1;1H\e[2J\n")
-#define txt(c) #c
+#define str(c) #c
 
 
 Player player1;
@@ -158,9 +158,9 @@ void initCare(Player *p){
         int j;
         int ind=0;
         char *var=malloc(20*sizeof(char));
-        printf("\tChoisissez votre Soin\n\n\tID\t Nom\t\tCE\n-1\tAucun choix\n");
+        printf("\tChoisissez votre Soin\n\n\tID\t Nom\t\tCE\n\t-1\tAucun choix\n");
         for(j=0;j<sizeof(Cares)/sizeof(Care);j++){
-            printf("%d\t%-20s\t%d\n",j,Cares[j].nom,Cares[j].CE);
+            printf("\t%d\t%-20s\t%d\n",j,Cares[j].nom,Cares[j].CE);
         }
         do{
             printf("%s-> ",p->Pleader.nom);
@@ -192,6 +192,7 @@ void buyCA(Player *p){
 
     do{
         printf("Combien de crédits d'action voulez-vous acheter ? \n Il vous reste %d CE\n",p->CEinit);
+        printf("%s >",p->Pleader.nom);
         scanf("%s",CA);
         CA2=atoi(CA);
         if(CA2>=0 && CA2<=p->CEinit){
@@ -226,42 +227,39 @@ void printTerrain(){
     int row2=row*5/6;
     pos1=player1.pos;
     pos2=player2.pos;
-    printf(OBLUE);
     
     //player
-    printf(GREEN "Player 1");
-    for(j=8;j<col-8;j++){
+    printf(GREEN OBLUE"Player 1 Pos:%5d",player2.pos-player1.pos);
+    for(j=18;j<col-8;j++){
             printf(" ");
     }
     printf("Player 2");
-    for(j=0;j<pos1;j++){
+    for(j=1;j<pos1;j++){
             printf(" ");
     }
     printf("%c%c",player1.Pleader.sprite[0],player1.Pleader.sprite[1]);
 
-    for(j=pos1+2;j<pos2-1;j++){
+    for(j=pos1;j<pos2;j++){
             printf(" ");
     }
     printf("%c%c",player2.Pleader.sprite[0],player2.Pleader.sprite[1]);
-
-
-    for(j=pos2+1;j<col;j++){
+    for(j=pos2+2;j<col-1;j++){
             printf(" ");
     }
-    for(j=0;j<pos1;j++){
+    for(j=1;j<pos1;j++){
             printf(" ");
     }
     printf("%c%c",player1.Pleader.sprite[2],player1.Pleader.sprite[3]);
-
-    for(j=pos1+2;j<pos2-1;j++){
+    
+    for(j=pos1;j<pos2;j++){
             printf(" ");
     }
     printf("%c%c",player2.Pleader.sprite[2],player2.Pleader.sprite[3]);
-
-
-    for(j=pos2;j<col-1;j++){
+    for(j=pos2+2;j<col-1;j++){
             printf(" ");
     }
+
+    
     //fin
 
     printf(OGREEN);
@@ -277,7 +275,7 @@ void printTerrain(){
 
 void move(Player *p,char * sens,int n){
     if(strcmp(sens,"forward")==0){
-        if(p->CA>=n ){
+        if(p->CAcurrent>=n ){
             if(p==&player1 && player1.pos+n<player2.pos){
                 player1.pos+=n;
                 p->CAcurrent-=n;
@@ -371,16 +369,14 @@ void finish(int *end){
 void initPlayer(Player *p){
     clear();
     printf("\t\t%s\n\n",p->Pleader.nom);
-    player2.pos=w.ws_col-1;
+    
     if(p->CEinit-(Weapons[0].CE)>0){
         printf("\tIl vous reste %d CE\n",p->CEinit);
         initWeapon(p);
-        printPlayer(p);
         clear();
         if(p->CEinit-(Protections[0].CE)>0){
             printf("\tIl vous reste %d CE\n",p->CEinit);
             initProtection(p);
-            printPlayer(p);
             clear();
         }else{
             p->Protection.nom="Aucune";
@@ -388,7 +384,6 @@ void initPlayer(Player *p){
         if(p->CEinit-(Cares[0].CE)>0){
             printf("\tIl vous reste %d CE\n",p->CEinit);
             initCare(p);
-            printPlayer(p);
             clear();
         }else{
             p->Pcare.nom="Aucune";
@@ -396,7 +391,6 @@ void initPlayer(Player *p){
         if(p->CEinit>0){
             printf("\tIl vous reste %d CE\n",p->CEinit);
             buyCA(p);
-            printPlayer(p);
             
         }
     }
@@ -424,7 +418,8 @@ void fight(){
     player2.CE-=CE;
     int findepartie=1;
     int end;
-    
+    player1.pos=1;
+    player2.pos=w.ws_col-3;
     
     while(findepartie==1){
         finish(&findepartie);
