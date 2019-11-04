@@ -3,7 +3,8 @@
 
 typedef struct {
     char *nom;
-    int Type; //0 fruit,1 legumes
+    /*0 fruit,1 legumes*/
+    int Type; 
     int Force;
     int Resistance;
     int PVMax;
@@ -26,7 +27,7 @@ typedef struct
     char *nom;
     int CE;
     int CA;
-    int Probabilite;//En pourcentage
+    int Probabilite;/*En pourcentage*/
 
 }Protection;
 
@@ -49,7 +50,8 @@ typedef struct{
     int CA;
     int CAcurrent;
     int CEinit;
-    int pos;    
+    int pos;
+    int protect;    
 }Player;
 
 

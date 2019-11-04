@@ -1,7 +1,7 @@
 
 #define RESET "\033[0m"
 
-//Texte
+/*Texte*/
 
 #define BLACK    "\033[1;30m"
 #define RED      "\033[1;31m"
@@ -12,7 +12,7 @@
 #define CYAN     "\033[1;36m"
 #define GREY     "\033[1;37m"
 
-//underline
+/*underline*/
 
 #define UBLACK "\033[4;30m"
 #define URED "\033[4;31m"
@@ -23,7 +23,7 @@
 #define UCYAN "\033[4;36m"
 #define UWHITE "\033[4;37m"
 
-//background
+/*background*/
 
 #define OBLACK "\033[40m"
 #define ORED "\033[41m"

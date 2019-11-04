@@ -6,7 +6,6 @@
 #include <ctype.h>
 #include <unistd.h>
 #include "color.h"
-#define clear() printf("\e[1;1H\e[2J\n")
 #define str(c) #c
 
 
@@ -14,7 +13,9 @@ Player player1;
 Player player2;
 struct winsize w;
 
-
+void clear(){
+    printf("\x1B[1;1H\x1B[2J\n");
+    }
 
 int isNumber(char* arg){
     int num;
@@ -49,7 +50,7 @@ void show(char *a,char* ind){
             printf("\tID\tNom\t\tType\t Force\t Resistance\t PVmax \t CE\n\n");
             printf("\t%d\t%-10s\t%3s\t%5d\t%10d\t%5d\t%3d\n",i,Leaders[i].nom,"Fruits",Leaders[i].Force,Leaders[i].Resistance,Leaders[i].PVMax,Leaders[i].CE);
     }else if(strcmp(a,"weapon")==0 && i>=0 && i<sizeof(Weapons)/sizeof(Weapon)){
-            printf("\tID\tNom\t\t\tCE \t CA \t Dégats \tProbabilité\n\n");
+            printf("\tID\tNom\t\t\tCE \t CA \t Dégats \tPortée\n\n");
             printf("\t%d\t%-20s\t%d\t%d\t%3d-%-5d \t %9d\n",i,Weapons[i].nom,Weapons[i].CE,Weapons[i].CA,Weapons[i].Degats[0],Weapons[i].Degats[1],Weapons[i].Portee);
     }else if(strcmp(a,"weapons")==0 && i==-2){
             printf("\tID\t Nom\n");
@@ -79,17 +80,28 @@ void show(char *a,char* ind){
 
 
 void printPlayer(Player *p){
-    printf(OBLUE  "\t%s\n\n",p->Pleader.nom);
-    printf("\tCE : %d\n\tArme : %s\n\tProtection : %s\n\tSoin : %s\n\n" RESET,p->CE,p->Pweapon.nom,p->Protection.nom,p->Pcare.nom);
+    printf("\t\tArme : %s\n",p->Pweapon.nom);
+    printf("\t\tCA : %d \t Dégats : %d-%d \t Portée : %d\n",p->Pweapon.CA,p->Pweapon.Degats[0],p->Pweapon.Degats[1],p->Pweapon.Portee);
+    if(p->Protection.nom=="Aucune"){
+        printf("\t\tAucune protection\n");
+    }else{
+         printf("\t\tProtection : %s \n\t\tCA : %d \t Probabilité : %d%\n",p->Protection.nom,p->Protection.CA,p->Protection.Probabilite);
+    }
+    if(p->Pcare.nom=="Aucune"){
+        printf("\t\tAucun soin \n");
+    }else{
+        printf("\t\tSoin : %s\n\t\tCA : %d \t Volumes : %d \t Effet : %d-%d\n",p->Pcare.nom,p->Pcare.CA,p->Pcare.Volumes,p->Pcare.Effet[0],p->Pcare.Effet[1]);
+    }
 }
 
 
 void initProtection(Player *p){
-        int choix=0;
+        int choix;
         int CE1;
         int j;
         int ind=0;
         char *var=malloc(20*sizeof(char));
+        choix=0;
         printf("\tChoisissez votre Protection\n\n\tID\t Nom\t\tCE\n\t-1\tAucun choix\n");
         for(j=0;j<sizeof(Protections)/sizeof(Care);j++){
             printf("\t%d\t%-20s\t%d\n",j,Protections[j].nom,Protections[j].CE);
@@ -97,7 +109,7 @@ void initProtection(Player *p){
         do{
             printf("%s-> ",p->Pleader.nom);
             scanf("%s",var);
-            ind=atoi(var);//verif
+            ind=isNumber(var);
             if(ind==-1){
                 choix=1;
                 p->Protection.nom="Aucune";
@@ -120,20 +132,22 @@ void initProtection(Player *p){
 
 void initWeapon(Player *p){
     int ind=0;
-    int j=0;
+    int j;
+    int choix;
+    int CE1;
     char *var=malloc(20*sizeof(char));
+    choix=0;
     printf("\tChoisissez votre Arme\n\n");
     printf("\tID\t Nom\t\tCE\n");
     for(j=0;j<sizeof(Weapons)/sizeof(Weapon);j++){
         printf("\t%d\t%-20s\t%d\n",j,Weapons[j].nom,Weapons[j].CE);
     }
     printf("\n");
-    int choix=0;
-    int CE1;
+    
     do{
         printf("%s-> ",p->Pleader.nom);
         scanf("%s",var);
-        ind=isNumber(var);//verif
+        ind=isNumber(var);/*verif*/
         if(ind>=0 && ind < sizeof(Weapons)/sizeof(Weapon)){
             CE1=Weapons[ind].CE;
             if( CE1 <= p->CEinit){
@@ -165,7 +179,7 @@ void initCare(Player *p){
         do{
             printf("%s-> ",p->Pleader.nom);
             scanf("%s",var);
-            ind=atoi(var);//verif
+            ind=isNumber(var);
             if(ind==-1){
                 choix=1;
                 p->Pcare.nom="Aucune";
@@ -191,12 +205,11 @@ void buyCA(Player *p){
     int CA2=0;
 
     do{
-        printf("Combien de crédits d'action voulez-vous acheter ? \n Il vous reste %d CE\n",p->CEinit);
+        printf("\tCombien de crédits d'action voulez-vous acheter ? \n\n",p->CEinit);
         printf("%s >",p->Pleader.nom);
         scanf("%s",CA);
         CA2=atoi(CA);
         if(CA2>=0 && CA2<=p->CEinit){
-            printf("Vous avez acheter %d crédits d'action \n",CA2);
             res=0;
             p->CA=CA2;
             p->CAcurrent=CA2;
@@ -218,6 +231,7 @@ void hidePlayer(){
 
 
 
+
 void printTerrain(){
     int col=w.ws_col;
     int row=w.ws_row;
@@ -227,8 +241,7 @@ void printTerrain(){
     int row2=row*5/6;
     pos1=player1.pos;
     pos2=player2.pos;
-    
-    //player
+
     printf(GREEN OBLUE"Player 1 Pos:%5d",player2.pos-player1.pos);
     for(j=18;j<col-8;j++){
             printf(" ");
@@ -259,8 +272,7 @@ void printTerrain(){
             printf(" ");
     }
 
-    
-    //fin
+
 
     printf(OGREEN);
     for(i=1+row2;i<row;i++){
@@ -303,6 +315,46 @@ void move(Player *p,char * sens,int n){
     }
 }
 
+void useweapon(Player *p){
+    float a,b,degat;
+    int c;
+    p->CAcurrent-=p->Pweapon.CA;
+    if(player2.pos-player1.pos<=p->Pweapon.Portee){
+        if(p==&player1){
+            int r=rand()%100;
+            if( r >= player2.Protection.Probabilite){
+                degat=p->Pweapon.Degats[0]+rand()%(p->Pweapon.Degats[1]-p->Pweapon.Degats[0]);
+                a=(100.0 + (float)p->Pleader.Force)/100.0;
+                b=(100.0 - (float) player2.Pleader.Resistance)/100.0;
+                c=(int) degat*a*b + 0,5;
+                printf("%d",c);
+            }
+        }else{
+            printf("Loupée dommage!");
+        }
+    }else{
+        printf("Hors de portée ! Cheh \n");
+    }
+}
+
+void use(Player *p,char* arg,char* n){
+    int num;
+    int i;
+    i=0;
+    num=atoi(n);
+    if(strcmp(arg,"weapon")==0 && num>=1){
+        while(i<num && p->CAcurrent-p->Pweapon.CA>=0 ){
+            useweapon(p);
+            i++;
+        }
+
+    }else if(strcmp(arg,"protection")==0){
+
+
+    }else if(strcmp(arg,"care")==0 && num>=1){
+}
+}
+
 void fightcommandes(char *command,Player *p,int *tour){
     int i;
     int j=0;
@@ -326,6 +378,9 @@ void fightcommandes(char *command,Player *p,int *tour){
         if(*argv[1]==0){
             printPlayer(p);    
         }
+    }else if(strcmp(argv[0],"use")==0){
+            use(p,argv[1],argv[2]);
+
     }else if(strcmp(argv[0],"end")==0){
             *tour*=-1;  
         
@@ -350,7 +405,9 @@ void fightcommandes(char *command,Player *p,int *tour){
     }else{
         *tour*=-1;
     }
+    
     printTerrain();
+    
 }
 
 void finish(int *end){
@@ -400,8 +457,11 @@ void initPlayer(Player *p){
 
 
 void fight(){
-    printf("\n\t\tQue le duel commence !!\n\n");
     int CE,CE1,CE2,tour;
+    int findepartie;
+    int end;
+    char *command=(char*)malloc(50*sizeof(char));
+    printf("\n\t\tQue le duel commence !!\n\n");
     CE=50;
     CE1=player1.CE;
     CE2=player2.CE;
@@ -416,17 +476,14 @@ void fight(){
     player2.CEinit=CE;
     player1.CE-=CE;
     player2.CE-=CE;
-    int findepartie=1;
-    int end;
+    findepartie=1;
     player1.pos=1;
     player2.pos=w.ws_col-3;
-    
     while(findepartie==1){
         finish(&findepartie);
         if(findepartie==1){
             initPlayer(&player1);
             initPlayer(&player2);
-            
             end=1;
             tour=1;
             hidePlayer();
@@ -434,14 +491,15 @@ void fight(){
             while(end==1){
                 player1.CAcurrent=player1.CA;
                 player2.CAcurrent=player2.CA;
-                char *command=(char*)malloc(50*sizeof(char));
                 while(tour==1){
+                    player1.protect=0;
                     printf( "%s (%d) >",player1.Pleader.nom,player1.CAcurrent);
                     scanf ("%m[^\n]%*c",&command);
                     fightcommandes(command,&player1,&tour);
                 
                 }
                 while(tour==-1){
+                    player2.protect=0;
                     printf( "%s (%d) >",player2.Pleader.nom,player2.CAcurrent);
                     scanf ("%m[^\n]%*c",&command);
                     fightcommandes(command,&player2,&tour);
@@ -492,7 +550,6 @@ void commandes(char *command,int *exit){
             h++;
         }
     }
-    //printf("%s,%s,%s,%s",argv[0],argv[1],argv[2],argv[3]);
     if(strcmp(argv[0],"show")==0){
         if(*argv[1]!=0){
             clear();
@@ -513,7 +570,6 @@ void commandes(char *command,int *exit){
         if(condition1 || condition2){
             LeaderSelection(argv[1],&player1);
             LeaderSelection(argv[3],&player2);
-            //printf("%s,%s",player1.Pleader.nom,player2.Pleader.nom);
             if(strcmp(player1.Pleader.nom,"Aucun")==0){
                 printf("\n\tPlayer 1 pas assez des crédits  CE : %d ,pour le champion %s \n",player1.CE ,argv[1]);
             }
@@ -536,19 +592,22 @@ void commandes(char *command,int *exit){
     }  
 }
 
-void main(){
+int main(){
+    int exit;
+    char *command=(char*)malloc(50*sizeof(char));
     player1.CE=400;
     player2.CE=400;
     ioctl(0, TIOCGWINSZ, &w);
     clear();
     printf(RED "\n\tCredit Player 1 : %d" YELLOW "\n\n\tCredit Player 2 : %d \n" RESET,player1.CE,player2.CE);
-    int exit=1;
+    printf("%d",isNumber("-1"));
+
+    exit=1;
     while(exit==1){
         printf("\n\t>");
-        char *command=(char*)malloc(50*sizeof(char));
         scanf ("%m[^\n]%*c",&command);
         commandes(command,&exit);
         free(command);
     }
-    
+    return 0;
 }
