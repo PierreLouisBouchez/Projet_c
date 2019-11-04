@@ -51,7 +51,9 @@ typedef struct{
     int CAcurrent;
     int CEinit;
     int pos;
-    int protect;    
+    int protect;
+    int PV;
+    int nbSoin;
 }Player;
 
 
