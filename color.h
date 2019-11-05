@@ -12,17 +12,6 @@
 #define CYAN     "\033[1;36m"
 #define GREY     "\033[1;37m"
 
-/*underline*/
-
-#define UBLACK "\033[4;30m"
-#define URED "\033[4;31m"
-#define UGREEN "\033[4;32m"
-#define UYELLOW "\033[4;33m"
-#define UBLUE "\033[4;34m"
-#define UPURPLE "\033[4;35m"
-#define UCYAN "\033[4;36m"
-#define UWHITE "\033[4;37m"
-
 /*background*/
 
 #define OBLACK "\033[40m"
