@@ -18,8 +18,9 @@
 #define ORED "\033[41m"
 #define OGREEN "\033[42m"
 #define OYELLOW "\033[43m"
-#define OBLUE "" //\033[44m"
+#define OBLUE "\033[44m"
 #define OPURPLE "\033[45m"
 #define OCYAN "\033[46m"
 #define OWHITE "\033[47m"
+#define ORANGE "\033[00m"
 

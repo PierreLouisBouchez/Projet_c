@@ -83,14 +83,14 @@ void printPlayer(Player *p){
     printf(RESET "\t\tArme : %s\n",p->Pweapon.nom);
     printf("\t\tCA : %d \t Dégats : %d-%d \t Portée : %d\n",p->Pweapon.CA,p->Pweapon.Degats[0],p->Pweapon.Degats[1],p->Pweapon.Portee);
     if(p->Protection.nom=="Aucune"){
-        printf("\t\tAucune protection\n");
+        printf("\tAucune protection\n");
     }else{
-         printf("\t\tProtection : %s \n\t\tCA : %d \t Probabilité : %d \n",p->Protection.nom,p->Protection.CA,p->Protection.Probabilite);
+         printf("\tProtection : %s \n\t\tCA : %d \t Probabilité : %d \n",p->Protection.nom,p->Protection.CA,p->Protection.Probabilite);
     }
     if(p->Pcare.nom=="Aucune"){
-        printf("\t\tAucun soin \n");
+        printf("\tAucun soin \n");
     }else{
-        printf("\t\tSoin : %s\n\t\tCA : %d \t Volumes : %d \t Effet : %d-%d\n",p->Pcare.nom,p->Pcare.CA,p->Pcare.Volumes,p->Pcare.Effet[0],p->Pcare.Effet[1]);
+        printf("\tSoin : %s\n\t\tCA : %d \t Volumes : %d \t Effet : %d-%d\n",p->Pcare.nom,p->Pcare.CA,p->Pcare.Volumes,p->Pcare.Effet[0],p->Pcare.Effet[1]);
     }
 }
 
@@ -225,7 +225,7 @@ void hidePlayer(){
     printf("\n");
     for(i=0;i<w.ws_row*5/6-2;i++){
         for(j=0;j<w.ws_col;j++){
-            printf(OBLUE " ");
+            printf( " ");
         }
     }
 }
@@ -253,7 +253,7 @@ void printTerrain(){
     for(h=0;h<player2.PV/10;h++){
         printf( RESET " " ORED " ");
     }
-    printf(RESET OBLUE"Player 1 Distance : %5d",player2.pos-player1.pos);
+    printf(RESET "Player 1 Distance : %5d",player2.pos-player1.pos);
     for(j=25;j<col-8;j++){
             printf(" ");
     }
@@ -282,27 +282,29 @@ void printTerrain(){
             printf(" ");
 
     }
-    printf(GREEN "%c%c" OBLUE,player1.Pleader.sprite[0],player1.Pleader.sprite[1]);
-
+    printf("%s%s" ,player1.Pleader.sprite[0],player1.Pleader.sprite[1]);
     for(j=pos1;j<pos2;j++){
             printf(" ");
     }
-    printf(RED "%c%c" OBLUE,player2.Pleader.sprite[0],player2.Pleader.sprite[1]);
-    for(j=pos2+2;j<col-1;j++){
-            printf(" ");
-    }
+    printf("%s%s\n" ,player2.Pleader.sprite[1],player2.Pleader.sprite[0]);
     for(j=1;j<pos1;j++){
             printf(" ");
     }
-    printf(GREEN "%c%c" OBLUE,player1.Pleader.sprite[2],player1.Pleader.sprite[3]);
+    printf("%s%s" ,player1.Pleader.sprite[2],player1.Pleader.sprite[3]);
+    for(j=pos1;j<pos2;j++){
+            printf(" ");
+    }
+    printf("%s%s\n" ,player2.Pleader.sprite[3],player2.Pleader.sprite[2]);
+    for(j=1;j<pos1;j++){
+            printf(" ");
+    }
+    printf("%s%s" ,player1.Pleader.sprite[4],player1.Pleader.sprite[5]);
     
     for(j=pos1;j<pos2;j++){
             printf(" ");
     }
-    printf(RED "%c%c" OBLUE,player2.Pleader.sprite[2],player2.Pleader.sprite[3]);
-    for(j=pos2+2;j<col-1;j++){
-            printf(" ");
-    }
+    printf("%s%s\n" ,player2.Pleader.sprite[5],player2.Pleader.sprite[4]);
+    
 
 
 
@@ -504,7 +506,6 @@ int leaderdead(Player *p){
 void initPlayer(Player *p,int CE){
     p->CEinit=CE;
     p->CE-=CE;
-    p->CEinit-=p->Pleader.CE;
     p->PV=p->Pleader.PVMax;
     p->CA=100;
     clear();
@@ -723,8 +724,8 @@ int main(){
     char *command=(char*)malloc(50*sizeof(char));
     clear();
     printf("\t\t\tB I E N V E N U E\tS U R\tF R U I T   W A R S\n\n");
-    player1.CE=400;
-    player2.CE=400;
+    player1.CE=50;
+    player2.CE=50;
     ioctl(0, TIOCGWINSZ, &w);
     endgame=1;
     while(endgame){
