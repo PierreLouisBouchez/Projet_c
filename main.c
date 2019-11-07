@@ -569,8 +569,8 @@ void fight(){
     player1.CE-=CE;
     player2.CE-=CE;  
     if(end==1){
-        initPlayer(&player1,CE);
-        initPlayer(&player2,CE);
+        initPlayer(&player1);
+        initPlayer(&player2);
         while(end==1){
             player1.protect=0;
             hidePlayer();
