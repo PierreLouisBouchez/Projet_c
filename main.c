@@ -492,6 +492,7 @@ void fightcommandes(char *command,Player *p,int *tour){
 void finish(int *end){
     if (player1.CE < 2 || player2.CE <2){
         *end=2;
+        endgame=0;
         if(player1.CE < player2.CE){
             printf("\n\tVictoire Player 2 !\n");
         }else if(player1.CE > player2.CE){
@@ -543,9 +544,18 @@ void initPlayer(Player *p,int CE){
     p->CE+=p->CEinit;
 }
 
+int max(int a,int b){
+    if(a>b){
+        return a;
+    }else{
+        return b;
+    }
+}
+
 
 void fight(){
-    int CE,CE1,CE2,tour;
+    int CE,CE1,CE2,tour,gain;
+    int saveCE1,saveCE2;
     int findepartie;
     int end;
     char *command=(char*)malloc(50*sizeof(char));
@@ -571,6 +581,8 @@ void fight(){
     if(end==1){
         initPlayer(&player1,CE);
         initPlayer(&player2,CE);
+        saveCE1=CE-player1.CEinit;
+        saveCE2=CE-player2.CEinit;
         while(end==1){
             player1.protect=0;
             hidePlayer();
@@ -614,12 +626,15 @@ void fight(){
                 end=0;
                 clear();
                 printf("Player 1 mort\n");
-                
+                gain=5*max((saveCE1-saveCE2),1);
+                player2.CE+=gain;
             }
             if(leaderdead(&player2)){
                 end=0;
                 clear();
                 printf("Player 2 mort\n");
+                gain=5*max((saveCE2-saveCE1),1);
+                player1.CE+=gain;
             }
         }   
         free(command);
@@ -628,7 +643,7 @@ void fight(){
         endgame=0;
     }
 }
-
+//5 5
 
 int isLeaders(char* c,int type){
     int i;
@@ -730,16 +745,23 @@ int main(){
     ioctl(0, TIOCGWINSZ, &w);
     endgame=1;
     while(endgame){
-        printf(RED "\n\tCredit Player 1 : %d" YELLOW "\n\n\tCredit Player 2 : %d \n" RESET,player1.CE,player2.CE);
         exit=1;
+        
+        if(exit==1){
+
+        
+        printf(RED "\n\tCredit Player 1 : %d" YELLOW "\n\n\tCredit Player 2 : %d \n" RESET,player1.CE,player2.CE);
+        
         while(exit==1){
             printf("\n\t>");
             scanf("%m[^\n]%*c",&command);
             commandes(command,&exit);
             free(command);
+            finish(&exit);
         }
         if(exit==2){
             endgame=0;
+        }
         }
     }
     printf("\n\t\tFIN DE PARTIE\n\n");
