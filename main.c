@@ -749,5 +749,6 @@ int main(){
     printf("\n\t\tFIN DE PARTIE\n\n");
     //sleep(1);
     //printf("\n Voulez vous rejouer?\n");
+
     return 0;
 }
