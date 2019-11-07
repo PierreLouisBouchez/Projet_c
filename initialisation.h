@@ -1,5 +1,4 @@
-
-
+#include "color.h"
 
 typedef struct {
     char *nom;
@@ -9,8 +8,7 @@ typedef struct {
     int Resistance;
     int PVMax;
     int CE;
-    char *sprite;
-    
+    char **sprite;    
 }Leader;
 
 typedef struct
@@ -57,19 +55,32 @@ typedef struct{
 }Player;
 
 
+char *Haricot[]={OGREEN " "RESET,RESET " ",OGREEN " "RESET,RESET " ",RESET " ",OGREEN " " RESET};
+char *Fenouil[]={" ",OGREEN" " RESET,OGREEN" "RESET,OGREEN" "RESET,OWHITE" "RESET,OWHITE" " RESET};
+char *Poireau[]={" ",OGREEN" " RESET," ",OGREEN" " RESET," ",OWHITE" " RESET};
+char *Aubergine[]={" ",OGREEN" " RESET,OPURPLE" " RESET,OPURPLE" " RESET,OPURPLE" " RESET,OPURPLE" " RESET};
+char *Courge[]={" ",OGREEN" " RESET,OGREEN" " RESET,OGREEN" " RESET,OGREEN" " RESET,OGREEN" " RESET};
+char *Carotte[]={" ",OGREEN" " RESET," ",OYELLOW" " RESET," ",OYELLOW" " RESET};
+char *Banane[]={RESET" "RESET,OYELLOW " " RESET,OYELLOW " " RESET," ",OYELLOW " " RESET," "};
+char *Kiwi[]={" "," "," "," "," ",OGREEN" "RESET};
+char *Poire[]={" "," ",OGREEN" " RESET," ",OGREEN" " RESET,OGREEN" " RESET};
+char *Pomme[]={" ",OGREEN " " RESET,ORED" "RESET,ORED" "RESET,ORED" "RESET,ORED" "RESET};
+char *Ananas[]={OGREEN" " RESET,OGREEN" " RESET,OYELLOW " " RESET,OYELLOW " " RESET,OYELLOW " " RESET,OYELLOW " " RESET};
+char *Durian[]={" ",OYELLOW " " RESET,OGREEN" " RESET,OGREEN" " RESET,OYELLOW " " RESET,OGREEN" " RESET};
+
 Leader Leaders[]={
-    {"Haricot",1,10,10,40,5,"/()/"},
-    {"Fenouil",1, 12, 15, 40, 7,"|{()"},
-    {"Poireau",1 ,15, 20 ,60, 10,"{/||"},
-    {"Aubergine", 1 ,20 ,20 ,60 ,15,"()()"},
-    {"Courge" ,1 ,20 ,25 ,80 ,20,"/)(/"},
-    {"Carotte",1, 25, 25, 80, 25,"\\, V"},
-    {"Banane",0,10 ,10 ,40 ,5,"|\\|/"},
-    {"Kiwi",0,12, 15, 40, 7,"   0"},
-    {"Poire",0, 15, 20, 60, 10," o U"},
-    {"Pomme", 0 ,20 ,20, 60, 15," , O"},
-    {"Ananas", 0, 20, 25, 80, 20,"\\/{}"},
-    {"Durian", 0,25 ,25 ,80 ,25,"..()"}
+    {"Haricot",1,10,10,40,5,Haricot},
+    {"Fenouil",1, 12, 15, 40, 7,Fenouil},
+    {"Poireau",1 ,15, 20 ,60, 10,Poireau},
+    {"Aubergine", 1 ,20 ,20 ,60 ,15,Aubergine},
+    {"Courge" ,1 ,20 ,25 ,80 ,20,Courge},
+    {"Carotte",1, 25, 25, 80, 25,Carotte},
+    {"Banane",0,10 ,10 ,40 ,5,Banane},
+    {"Kiwi",0,12, 15, 40, 7,Kiwi},
+    {"Poire",0, 15, 20, 60, 10,Poire},
+    {"Pomme", 0 ,20 ,20, 60, 15,Pomme},
+    {"Ananas", 0, 20, 25, 80, 20,Ananas},
+    {"Durian", 0,25 ,25 ,80 ,25,Durian}
 };
 
 Weapon Weapons[]={
