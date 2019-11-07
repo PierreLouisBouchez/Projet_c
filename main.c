@@ -12,10 +12,15 @@
 Player player1;
 Player player2;
 struct winsize w;
+int endgame;
 
 void clear(){
     printf("\x1B[1;1H\x1B[2J\n");
     }
+
+void error(){
+    printf("\n\tAucune commande reconnue tapez help pour afficher les commandes\n");
+}
 
 int isNumber(char* arg){
     int num;
@@ -74,7 +79,7 @@ void show(char *a,char* ind){
                 printf("\t%d\t%-20s\n",j,Cares[j].nom);
             }
     }else{
-            printf("\tError, type help for syntax\n");
+        error();
     }
 }
 
@@ -83,16 +88,17 @@ void printPlayer(Player *p){
     printf(RESET "\t\tArme : %s\n",p->Pweapon.nom);
     printf("\t\tCA : %d \t Dégats : %d-%d \t Portée : %d\n",p->Pweapon.CA,p->Pweapon.Degats[0],p->Pweapon.Degats[1],p->Pweapon.Portee);
     if(p->Protection.nom=="Aucune"){
-        printf("\tAucune protection\n");
+        printf("\t\tAucune protection\n");
     }else{
-         printf("\tProtection : %s \n\t\tCA : %d \t Probabilité : %d \n",p->Protection.nom,p->Protection.CA,p->Protection.Probabilite);
+         printf("\t\tProtection : %s \n\t\tCA : %d \t Probabilité : %d%\n",p->Protection.nom,p->Protection.CA,p->Protection.Probabilite);
     }
     if(p->Pcare.nom=="Aucune"){
-        printf("\tAucun soin \n");
+        printf("\t\tAucun soin \n");
     }else{
-        printf("\tSoin : %s\n\t\tCA : %d \t Volumes : %d \t Effet : %d-%d\n",p->Pcare.nom,p->Pcare.CA,p->Pcare.Volumes,p->Pcare.Effet[0],p->Pcare.Effet[1]);
+        printf("\t\tSoin : %s\n\t\tCA : %d \t Volumes : %d \t Effet : %d-%d\n",p->Pcare.nom,p->Pcare.CA,p->Pcare.Volumes,p->Pcare.Effet[0],p->Pcare.Effet[1]);
     }
 }
+
 
 
 void initProtection(Player *p){
@@ -484,15 +490,16 @@ void fightcommandes(char *command,Player *p,int *tour){
 }
 
 void finish(int *end){
-    if (player1.CE == 1 || player2.CE ==1){
-        *end=0;
-        printf("\t\tFin de partie");
+    if (player1.CE < 2 || player2.CE <2){
+        *end=2;
         if(player1.CE < player2.CE){
-            printf("\t\tVictoire Player 2 !");
-        }else{
-            printf("\t\tVictoire Player 1 !");
+            printf("\n\tVictoire Player 2 !\n");
+        }else if(player1.CE > player2.CE){
+            printf("\n\tVictoire Player 1 !\n");
+        }else if(player1.CE == player2.CE){
+            printf("Egalité parfaite");
         }
-        printf("\tPlayer 1 : %d\tPlayer 2 : %d\n",player1.CE,player2.CE);
+        printf("\n\tPlayer 1 : %d CE \tPlayer 2 : %d CE \n",player1.CE,player2.CE);
     }
 }
 
@@ -504,14 +511,12 @@ int leaderdead(Player *p){
 }
 
 void initPlayer(Player *p,int CE){
-    p->CEinit=CE;
-    p->CE-=CE;
     p->PV=p->Pleader.PVMax;
-    p->CA=100;
+    p->CA=50;
     clear();
     printf("\t\t%s\n\n",p->Pleader.nom);
     
-    if(p->CEinit-(Weapons[0].CE)>0){
+    if(p->CEinit>=2){
         printf("\tIl vous reste %d CE\n",p->CEinit);
         initWeapon(p);
         clear();
@@ -532,13 +537,9 @@ void initPlayer(Player *p,int CE){
         if(p->CEinit>0){
             printf("\tIl vous reste %d CE\n",p->CEinit);
             buyCA(p);
-            
         }
     }
     getchar();
-   
-    
-    //printf("%d,%d",p->nbSoin,p->Pcare.Volumes);
     p->CE+=p->CEinit;
 }
 
@@ -548,9 +549,6 @@ void fight(){
     int findepartie;
     int end;
     char *command=(char*)malloc(50*sizeof(char));
-    player1.CE;
-    player2.CE;
-    printf("\n\t\tQue le duel commence !!\n\n");
     CE=50;
     CE1=player1.CE;
     CE2=player2.CE;
@@ -561,68 +559,74 @@ void fight(){
             CE=CE1;
         }
     }
-
-    findepartie=1;
-    player1.pos=1;
-    player2.pos=(w.ws_col/2)-2;
-    initPlayer(&player1,CE);
-    initPlayer(&player2,CE);
-    
+    player1.CEinit=CE;
+    player2.CEinit=CE;
     end=1;
     tour=1;
-    
-    while(end==1){
-        player1.protect=0;
-        hidePlayer();
-        printTerrain();
-        player1.CAcurrent=player1.CA;
-        player2.CAcurrent=player2.CA;
-        player1.nbSoin=player1.Pcare.Volumes;
-        player2.nbSoin=player2.Pcare.Volumes;
-        while(tour==1){
-            if(leaderdead(&player1) || leaderdead(&player2)){
-                tour=2;
-            }else if(noCA(&player1)){
-                tour*=-1;
-            }else{
+    player1.pos=1;
+    player2.pos=(w.ws_col/2)-2;
+    finish(&end);
+    player1.CE-=CE;
+    player2.CE-=CE;  
+    if(end==1){
+        initPlayer(&player1,CE);
+        initPlayer(&player2,CE);
+        while(end==1){
+            player1.protect=0;
+            hidePlayer();
+            printTerrain();
+            player1.CAcurrent=player1.CA;
+            player2.CAcurrent=player2.CA;
+            player1.nbSoin=player1.Pcare.Volumes;
+            player2.nbSoin=player2.Pcare.Volumes;
+            while(tour==1){
+                if(leaderdead(&player1) || leaderdead(&player2)){
+                    tour=2;
+                }else if(noCA(&player1)){
+                    tour*=-1;
+                }else{
+                    
+                    printf("%s (%d) >",player1.Pleader.nom,player1.CAcurrent);
+                    scanf ("%m[^\n]%*c",&command);
+                    fightcommandes(command,&player1,&tour);
+                    printTerrain(); 
+                }
                 
-                printf("%s (%d) >",player1.Pleader.nom,player1.CAcurrent);
+            }
+            player2.protect=0;
+            hidePlayer();
+            printTerrain();
+            while(tour==-1){
+                if(leaderdead(&player1) || leaderdead(&player2)){
+                    tour=2;
+                }else if(noCA(&player2)){
+                    tour*=-1;
+                }else{
+                printf( "%s (%d) >",player2.Pleader.nom,player2.CAcurrent);
                 scanf ("%m[^\n]%*c",&command);
-                fightcommandes(command,&player1,&tour);
+                fightcommandes(command,&player2,&tour);
                 printTerrain(); 
+                }
+                
             }
             
-        }
-        player2.protect=0;
-        hidePlayer();
-        printTerrain();
-        while(tour==-1){
-            if(leaderdead(&player1) || leaderdead(&player2)){
-                tour=2;
-            }else if(noCA(&player2)){
-                tour*=-1;
-            }else{
-            printf( "%s (%d) >",player2.Pleader.nom,player2.CAcurrent);
-            scanf ("%m[^\n]%*c",&command);
-            fightcommandes(command,&player2,&tour);
-            printTerrain(); 
+            if(leaderdead(&player1)){
+                end=0;
+                clear();
+                printf("Player 1 mort\n");
+                
             }
-            
-        }
-        
-        if(leaderdead(&player1)){
-            end=0;
-            clear();
-            printf("Player 1 mort\n");
-            
-        }
-        if(leaderdead(&player2)){
-            end=0;
-            clear();
-            printf("Player 2 mort\n");
-        }
-    }   
-    free(command);
+            if(leaderdead(&player2)){
+                end=0;
+                clear();
+                printf("Player 2 mort\n");
+            }
+        }   
+        free(command);
+    }
+    if(end==2){
+        endgame=0;
+    }
 }
 
 
@@ -718,7 +722,6 @@ void commandes(char *command,int *exit){
 
 int main(){
     int exit;
-    int endgame;
     char *command=(char*)malloc(50*sizeof(char));
     clear();
     printf("\t\t\tB I E N V E N U E\tS U R\tF R U I T   W A R S\n\n");
@@ -740,7 +743,8 @@ int main(){
         }
     }
     printf("\n\t\tFIN DE PARTIE\n\n");
-    sleep(1);
-    printf("\n Voulez vous rejouer?\n");
+    //sleep(1);
+    //printf("\n Voulez vous rejouer?\n");
+
     return 0;
 }
