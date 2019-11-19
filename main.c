@@ -8,19 +8,26 @@
 #include "color.h"
 #define str(c) #c
 
+/*Création de variable globale pour acces dans toute le fonctions*/
 
 Player player1;
 Player player2;
+/* Dimension du terminal  */
 struct winsize w;
 int endgame;
+
+/* Clear le terminal */
 
 void clear(){
     printf("\x1B[1;1H\x1B[2J\n");
     }
 
+/* Message d'erreur */
 void error(){
     printf("\n\tAucune commande reconnue tapez help pour afficher les commandes\n");
 }
+
+/* Fonction qui renvoye le nombre correspondant a la chaien de caractere ou -2 si autre chose qu'un nombre*/
 
 int isNumber(char* arg){
     int num;
@@ -30,6 +37,8 @@ int isNumber(char* arg){
     else
         return num;
 }
+
+/* Affichage de la commande show vegetable/fruits etc*/
 
 void show(char *a,char* ind){
     int i=isNumber(ind);
@@ -83,23 +92,24 @@ void show(char *a,char* ind){
     }
 }
 
+/*Affichage de la commande show*/
 
 void printPlayer(Player *p){
     printf(RESET "\t\tArme : %s\n",p->Pweapon.nom);
     printf("\t\tCA : %d \t Dégats : %d-%d \t Portée : %d\n",p->Pweapon.CA,p->Pweapon.Degats[0],p->Pweapon.Degats[1],p->Pweapon.Portee);
-    if(p->Protection.nom=="Aucune"){
+    if(strcmp(p->Protection.nom,"Aucune")==0){
         printf("\t\tAucune protection\n");
     }else{
-         printf("\t\tProtection : %s \n\t\tCA : %d \t Probabilité : %d%\n",p->Protection.nom,p->Protection.CA,p->Protection.Probabilite);
+         printf("\t\tProtection : %s \n\t\tCA : %d \t Probabilité : %d%%\n",p->Protection.nom,p->Protection.CA,p->Protection.Probabilite);
     }
-    if(p->Pcare.nom=="Aucune"){
+    if(strcmp(p->Pcare.nom,"Aucune")==0){
         printf("\t\tAucun soin \n");
     }else{
         printf("\t\tSoin : %s\n\t\tCA : %d \t Volumes : %d \t Effet : %d-%d\n",p->Pcare.nom,p->Pcare.CA,p->Pcare.Volumes,p->Pcare.Effet[0],p->Pcare.Effet[1]);
     }
 }
 
-
+/* Achat d'une protection ou non*/
 
 void initProtection(Player *p){
         int choix;
@@ -135,6 +145,7 @@ void initProtection(Player *p){
     free(var);
 }
 
+/* Achat d'une arme obligatoire*/
 
 void initWeapon(Player *p){
     int ind=0;
@@ -171,6 +182,7 @@ void initWeapon(Player *p){
     free(var);
 }
 
+/* Achat d'un soin ou non*/
 
 void initCare(Player *p){
         int choix=0;
@@ -205,6 +217,8 @@ void initCare(Player *p){
     free(var);
 }
 
+/* Achat de CA suplementaire */
+
 void buyCA(Player *p){
     int res=1;
     char *CA=malloc(20*sizeof(char));
@@ -226,6 +240,8 @@ void buyCA(Player *p){
     }while(res);
 }
 
+/* zone vide avant l'impression du terrain*/
+
 void hidePlayer(){
     int i,j;
     printf("\n");
@@ -237,7 +253,7 @@ void hidePlayer(){
 }
 
 
-
+/* impression du potager */
 
 void printTerrain(){
     int col=w.ws_col;
@@ -251,11 +267,11 @@ void printTerrain(){
     for(h=0;h<player1.PV/10;h++){
         printf(OGREEN " " RESET " ");
     }
-    printf("PV : %3d",player1.PV);
+    printf("PV : %3d" RESET,player1.PV);
     for(h=8;h<col-((player1.PV/10)*2+(player2.PV/10)*2)-8;h++){
         printf(" ");
     }
-    printf("PV : %3d",player2.PV);
+    printf("PV : %3d" RESET ,player2.PV);
     for(h=0;h<player2.PV/10;h++){
         printf( RESET " " ORED " ");
     }
@@ -325,6 +341,9 @@ void printTerrain(){
     printf(RESET "");
 }
 
+/* déplacement avant ou arriere du player dans la zone disponible au deplacement*/
+
+
 void move(Player *p,char * sens,int n){
     if(strcmp(sens,"forward")==0){
         if(p->CAcurrent>=n ){
@@ -355,36 +374,40 @@ void move(Player *p,char * sens,int n){
     }
 }
 
+
+
+Player *otherPlayer(Player *p){
+    if(p==&player1){
+        return &player2;
+    };
+    return &player1;
+}
+
+/* utilisation de l'arme du player*/
+
 void useweapon(Player *p){
     float a,b,degat;
     int c;
     int r;
+    Player *p2=otherPlayer(p);
     p->CAcurrent-=p->Pweapon.CA;
     if(player2.pos-player1.pos<=p->Pweapon.Portee){
-        r=rand()%100;
-        if(p==&player1){
+        if( r >= p2->Protection.Probabilite){
+                degat=p->Pweapon.Degats[0]+rand()%(p->Pweapon.Degats[1]-p->Pweapon.Degats[0]);
+                a=(100.0 + (float)p->Pleader.Force)/100.0;
+                b=(100.0 - (float) p2->Pleader.Resistance)/100.0;
+                c=(int) degat*a*b + 0.5;
+                p2->PV-=c;
+                printf("Vous infligez %d de dégats\n",c);
             
-            if( r >= player2.Protection.Probabilite){
-                degat=p->Pweapon.Degats[0]+rand()%(p->Pweapon.Degats[1]-p->Pweapon.Degats[0]);
-                a=(100.0 + (float)p->Pleader.Force)/100.0;
-                b=(100.0 - (float) player2.Pleader.Resistance)/100.0;
-                c=(int) degat*a*b + 0.5;
-                player2.PV-=c;
-                printf("Vous infligez %d de dégats\n",c);
-            }
-        }else if( r >= player1.Protection.Probabilite){
-                degat=p->Pweapon.Degats[0]+rand()%(p->Pweapon.Degats[1]-p->Pweapon.Degats[0]);
-                a=(100.0 + (float)p->Pleader.Force)/100.0;
-                b=(100.0 - (float) player1.Pleader.Resistance)/100.0;
-                c=(int) degat*a*b + 0.5;
-                player1.PV-=c; 
-                printf("Vous infligez %d de dégats\n",c);
-            }
+        }
     }else{
         printf("Hors de portée ! \n");
     }
 }
 
+
+/* utilisation du soin de son player*/
 
 void usecare(Player *p){
     int soin=(rand()%(p->Pcare.Effet[1]-p->Pcare.Effet[0]))+p->Pcare.Effet[0];
@@ -396,6 +419,8 @@ void usecare(Player *p){
         printf("Vous récuperez %d points de vie\n",soin);
     }
 }
+
+/* Commandes use (weapon/protection/care) avec toutes les verificatinos necessaire*/
 
 void use(Player *p,char* arg,char* n){
     int num;
@@ -416,8 +441,8 @@ void use(Player *p,char* arg,char* n){
     }else if(strcmp(arg,"protection")==0 && p->CAcurrent-p->Protection.CA>=0 ){
         p->protect=1;
         p->CAcurrent-=p->Protection.CA;
-    }else if(strcmp(arg,"care")==0 && p->PV!=p->Pleader.PVMax){
-        printf("%d,%d,%d|%d\n",p->PV,p->Pleader.PVMax,num,p->nbSoin);
+    }else if(strcmp(arg,"care")==0){
+        if(p->PV!=p->Pleader.PVMax){
         if(num>=1){
         while(i<num && p->CAcurrent-p->Pcare.CA>=0 && p->nbSoin>1){
             usecare(p);
@@ -428,10 +453,15 @@ void use(Player *p,char* arg,char* n){
             usecare(p);
             p->nbSoin--;
         }
+        }else{
+            printf("Soin impossible\n");
+        }
     }else{
         printf("Commande impossible\n");
     }
 }
+
+/* Commandes utiliser durant les duels et redirectio vers leur fonctions défini */
 
 void fightcommandes(char *command,Player *p,int *tour){
     int i;
@@ -457,6 +487,9 @@ void fightcommandes(char *command,Player *p,int *tour){
             printPlayer(p);   
         }
         
+    }else if(strcmp(argv[0],"abandon")==0){
+        p->PV=0;
+
     }else if(strcmp(argv[0],"use")==0){
             use(p,argv[1],argv[2]);
 
@@ -471,7 +504,7 @@ void fightcommandes(char *command,Player *p,int *tour){
                 *tour*=-1;  
             }
         }else{
-            printf("mouvement immpossible\n");
+            printf("Mouvement immpossible\n");
         }
     }else{
         hidePlayer();
@@ -489,6 +522,8 @@ void fightcommandes(char *command,Player *p,int *tour){
     
 }
 
+/* Verification de fin de partie après le duel*/
+
 void finish(int *end){
     if (player1.CE < 2 || player2.CE <2){
         *end=2;
@@ -504,12 +539,19 @@ void finish(int *end){
     }
 }
 
+/* Le joueur n'a plus de CA dans son tour de jeu*/
+
 int noCA(Player *p){
     return p->CAcurrent==0;
 }
+
+/* Champions mort*/
+
 int leaderdead(Player *p){
     return p->PV<1;
 }
+
+/* Initialisation d'un Joueur*/
 
 void initPlayer(Player *p,int CE){
     p->PV=p->Pleader.PVMax;
@@ -544,6 +586,8 @@ void initPlayer(Player *p,int CE){
     p->CE+=p->CEinit;
 }
 
+/* Fonction maximum*/
+
 int max(int a,int b){
     if(a>b){
         return a;
@@ -553,12 +597,18 @@ int max(int a,int b){
 }
 
 
+
+
+/* Programme principale des duel avec l'initialisation des player et la verifications des condition demandé dans le sujet*/
+
+
+
 void fight(){
     int CE,CE1,CE2,tour,gain;
     int saveCE1,saveCE2;
-    int findepartie;
     int end;
     char *command=(char*)malloc(50*sizeof(char));
+    /* Attributions des point d'équipement selon les CE minimales ou 50 si les CE sont suffisant dans les 2 camps */
     CE=50;
     CE1=player1.CE;
     CE2=player2.CE;
@@ -581,8 +631,10 @@ void fight(){
     if(end==1){
         initPlayer(&player1,CE);
         initPlayer(&player2,CE);
+        /* Sauvegarde des CE utilisé dans l'initialisation pour attribution des gains*/
         saveCE1=CE-player1.CEinit;
         saveCE2=CE-player2.CEinit;
+        /* DUEL */
         while(end==1){
             player1.protect=0;
             hidePlayer();
@@ -591,6 +643,8 @@ void fight(){
             player2.CAcurrent=player2.CA;
             player1.nbSoin=player1.Pcare.Volumes;
             player2.nbSoin=player2.Pcare.Volumes;
+            
+            /* Tour joueur 1 */
             while(tour==1){
                 if(leaderdead(&player1) || leaderdead(&player2)){
                     tour=2;
@@ -608,6 +662,7 @@ void fight(){
             player2.protect=0;
             hidePlayer();
             printTerrain();
+            /* Tour joueur 2 */
             while(tour==-1){
                 if(leaderdead(&player1) || leaderdead(&player2)){
                     tour=2;
@@ -621,7 +676,8 @@ void fight(){
                 }
                 
             }
-            
+
+            /* Si l'un des 2 leader est mort le duel se termine et on attibut les gains correspondant*/
             if(leaderdead(&player1)){
                 end=0;
                 clear();
@@ -643,7 +699,7 @@ void fight(){
         endgame=0;
     }
 }
-//5 5
+/* Verification si le nom du champions entrer et bien dans la liste des leaders avec le type demandé*/
 
 int isLeaders(char* c,int type){
     int i;
@@ -655,6 +711,8 @@ int isLeaders(char* c,int type){
     return 0;
 }
 
+/* Attribution du leader au player selectionner */
+
 void LeaderSelection(char *name,Player *player){
     int i;
     player->Pleader.nom="Aucun";
@@ -665,7 +723,7 @@ void LeaderSelection(char *name,Player *player){
     }
 }
 
-
+/* Lecture des commandes du menu principale puis redirection vers les differentes focntions correspondantes */
 
 void commandes(char *command,int *exit){
     int i;
@@ -735,29 +793,110 @@ void commandes(char *command,int *exit){
     }  
 }
 
+/* Verifier si La partie peut continuer ou non */
+
+void endGame(){
+    if (player1.CE < 7 || player2.CE <7){
+        endgame=0;
+        if(player1.CE < player2.CE){
+            printf("\n\tVictoire Player 2 !\n");
+        }else if(player1.CE > player2.CE){
+            printf("\n\tVictoire Player 1 !\n");
+        }else if(player1.CE == player2.CE){
+            printf("Egalité parfaite");
+        }
+        printf("\n\tPlayer 1 : %d CE \tPlayer 2 : %d CE \n",player1.CE,player2.CE);
+    }
+
+}
+
+void slept(int s){
+    sleep(s);
+    printf("\n");
+    sleep(s);
+}
+
+/*Credits*/
+void Credits(){
+    int sleeep;
+    int i;
+    sleeep=1;
+    sleep(sleeep);
+    printf(YELLOW"\t\t\tF O O D   W A R S\n\n\a");
+    slept(sleeep);
+    printf("\tLa Republique Potagère est en pleine ébullition!\n");
+    slept(sleeep);
+    printf("\tFace au coût élevé de la production des Légumes,\n");
+    slept(sleeep);
+    printf("\tla cupide Fédération  des Maraîchers a décidé de\n");
+    slept(sleeep);
+    printf("\tprivilégier la culture des Fruits !\n\n\n");
+    slept(sleeep);
+    printf("\tFace à ce grand péril, les Légumes ont décidé de\n");
+    slept(sleeep);
+    printf("\tse rebeller.C’est donc la  guerre  dans  tout le\n");
+    slept(sleeep);
+    printf("\tDomaine Cultivé ! Opérant à partir  d’une  serre\n");
+    slept(sleeep);
+    printf("\tcachee, les  Légumes  Rebelles, emmenés  par  le\n");
+    slept(sleeep);
+    printf("\tjeune  Lucarotte,  harcèlent  les  troupes  de \n");
+    slept(sleeep);
+    printf("\tl’Empire Fruitier, dirigé  d’une  main  de  fer\n");
+    slept(sleeep);
+    printf("\tpar  le maléfique Dark  Durian .Il y a des héros\n");
+    slept(sleeep);
+    printf("\tdans les deux camps.\n");
+    slept(sleeep);
+    printf("\tLe Mal est partout. . .\n" RESET);
+    slept(sleeep);
+    for(i=0;i<w.ws_row;i++){
+        printf("\n");
+        sleep(sleeep-1);
+        
+    }
+}
+/*
+void importLeaders(){
+    FILE *file = fopen("leekwars.csv", "r");
+    char buffer[256];
+    while (fgets(buffer, 256, file)) {
+        printf("%s\n", buffer);
+    }
+    fclose(file);
+}
+*/
+
 int main(){
+    int i;
+    int Sortie=0;
     int exit;
     char *command=(char*)malloc(50*sizeof(char));
-    clear();
-    printf("\t\t\tB I E N V E N U E\tS U R\tF R U I T   W A R S\n\n");
-    player1.CE=50;
-    player2.CE=50;
+    
     ioctl(0, TIOCGWINSZ, &w);
+    for(i=0;i<w.ws_row;i++){
+        printf("\n\n");
+    }
+    //Credits();
+    clear();
+    
+    
+    do{
+    player1.CE=300;
+    player2.CE=300;
     endgame=1;
+    printf(YELLOW"\n\t\t\tF O O D   W A R S\n\n");
     while(endgame){
         exit=1;
-        
         if(exit==1){
-
-        
-        printf(RED "\n\tCredit Player 1 : %d" YELLOW "\n\n\tCredit Player 2 : %d \n" RESET,player1.CE,player2.CE);
-        
+        printf("\n\tCredit Player 1 : %d\n\n\tCredit Player 2 : %d \n" ,player1.CE,player2.CE);
+        printf("\n\tCommande help pour afficher les commandes disponible" RESET);
         while(exit==1){
             printf("\n\t>");
             scanf("%m[^\n]%*c",&command);
             commandes(command,&exit);
             free(command);
-            finish(&exit);
+            endGame(&exit);
         }
         if(exit==2){
             endgame=0;
@@ -765,8 +904,17 @@ int main(){
         }
     }
     printf("\n\t\tFIN DE PARTIE\n\n");
-    //sleep(1);
-    //printf("\n Voulez vous rejouer?\n");
-
+    sleep(1);
+    int num;
+    do{
+    printf("\n Voulez vous rejouer? 1 : oui 0 : non\n");
+    scanf("%s",command);
+    num=isNumber(command);
+    }while(num <0  || num >1); 
+    Sortie=0;  
+    if(num){
+        Sortie=1;
+    }
+    }while(Sortie);
     return 0;
 }

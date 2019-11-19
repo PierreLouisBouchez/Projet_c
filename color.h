@@ -1,7 +1,7 @@
 
 #define RESET "\033[0m"
 
-/*Texte*/
+/*Couleur de Texte*/
 
 #define BLACK    "\033[1;30m"
 #define RED      "\033[1;31m"
@@ -12,7 +12,7 @@
 #define CYAN     "\033[1;36m"
 #define GREY     "\033[1;37m"
 
-/*background*/
+/*Couleur de Background*/
 
 #define OBLACK "\033[40m"
 #define ORED "\033[41m"

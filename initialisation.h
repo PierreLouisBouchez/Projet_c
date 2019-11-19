@@ -1,5 +1,6 @@
 #include "color.h"
 
+/* Création des structures de Leader protectinos soin arme et Player*/
 typedef struct {
     char *nom;
     /*0 fruit,1 legumes*/
@@ -16,7 +17,7 @@ typedef struct
     char *nom;
     int CE;
     int CA;
-    int Degats[2];
+    int Degats[3];
     int Portee;
 }Weapon;
 
@@ -54,6 +55,7 @@ typedef struct{
     int nbSoin;
 }Player;
 
+/* Pixel art des fruits ou legumes*/
 
 char *Haricot[]={OGREEN " "RESET,RESET " ",OGREEN " "RESET,RESET " ",RESET " ",OGREEN " " RESET};
 char *Fenouil[]={" ",OGREEN" " RESET,OGREEN" "RESET,OGREEN" "RESET,OWHITE" "RESET,OWHITE" " RESET};
@@ -67,6 +69,8 @@ char *Poire[]={" "," ",OGREEN" " RESET," ",OGREEN" " RESET,OGREEN" " RESET};
 char *Pomme[]={" ",OGREEN " " RESET,ORED" "RESET,ORED" "RESET,ORED" "RESET,ORED" "RESET};
 char *Ananas[]={OGREEN" " RESET,OGREEN" " RESET,OYELLOW " " RESET,OYELLOW " " RESET,OYELLOW " " RESET,OYELLOW " " RESET};
 char *Durian[]={" ",OYELLOW " " RESET,OGREEN" " RESET,OGREEN" " RESET,OYELLOW " " RESET,OGREEN" " RESET};
+
+/*Initialisation de toutes les tables*/
 
 Leader Leaders[]={
     {"Haricot",1,10,10,40,5,Haricot},
@@ -84,11 +88,11 @@ Leader Leaders[]={
 };
 
 Weapon Weapons[]={
-    {"Eplucheur Laser", 2 , 1 ,{1,2},2 },
-    {"Mandoline Sonique", 5, 3,{1,3}, 3},
-    {"Couperet Laser", 10, 5, {2,6}, 5},
-    {"Hachoir Neuronique", 20, 7,{4,9}, 7},
-    {"Mixeur Blaster", 30, 10,{7,12}, 11}
+    {"Eplucheur Laser", 2 , 1 ,{1,2,0},2 },
+    {"Mandoline Sonique", 5, 3,{1,3,0}, 3},
+    {"Couperet Laser", 10, 5, {2,6,0}, 5},
+    {"Hachoir Neuronique", 20, 7,{4,9,0}, 7},
+    {"Mixeur Blaster", 30, 10,{7,12,0}, 11},
 };
 
 Protection Protections[]={
@@ -101,5 +105,5 @@ Protection Protections[]={
 Care Cares[]={
     {"Humus-Neutronique", 1, 5, 4, {2,4}},
     {"Compost-Protonique", 5, 10, 3, {5,8}},
-    {"Engrais-Ionique", 7, 15, 2, {8,12}}
+    {"Engrais-Ionique", 7, 15, 2, {8,12}},
 };

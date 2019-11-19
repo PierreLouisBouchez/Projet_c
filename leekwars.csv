@@ -1,0 +1,13 @@
+Type;Variete;Force;Resistance;PV Max;CE
+Legume;Haricot;10;10;40;5
+Legume;Fenouil;12;15;40;7
+Legume;Poireau;15;20;60;10
+Legume;Aubergine;20;20;60;15
+Legume;Courgette;20;25;80;20
+Legume;Carotte;25;25;80;25
+Fruit;Banane;10;10;40;5
+Fruit;Kiwi;12;15;40;7
+Fruit;Poire;15;20;60;10
+Fruit;Pomme;20;20;60;15
+Fruit;Ananas;20;25;80;20
+Fruit;Durian;25;25;80;25
