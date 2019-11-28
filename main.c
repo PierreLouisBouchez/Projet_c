@@ -856,16 +856,7 @@ void Credits(){
         
     }
 }
-/*
-void importLeaders(){
-    FILE *file = fopen("leekwars.csv", "r");
-    char buffer[256];
-    while (fgets(buffer, 256, file)) {
-        printf("%s\n", buffer);
-    }
-    fclose(file);
-}
-*/
+
 
 int main(){
     int i;
